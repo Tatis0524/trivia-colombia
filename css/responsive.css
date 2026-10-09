@@ -1,0 +1,36 @@
+/* ==========================================================================
+   responsive.css — Media queries (adaptación a tableta y escritorio)
+   Los estilos base (móvil, desde 360 px) están en styles.css.
+   Aquí SOLO se redefinen tokens y distribuciones; no se declaran colores nuevos.
+   ========================================================================== */
+
+/* Tableta */
+@media (min-width: 768px) {
+  :root {
+    --fs-titulo: 2.25rem;     /* 36 px */
+    --fs-seccion: 1.625rem;   /* 26 px */
+    --fs-pregunta: 1.375rem;  /* 22 px */
+  }
+
+  .contenedor { padding-inline: var(--esp-6); }
+  .app-main { padding-block: var(--esp-8); }
+  .nav-principal__enlace { font-size: var(--fs-texto); }
+
+  .rejilla { grid-template-columns: repeat(2, 1fr); }
+  .opciones { grid-template-columns: repeat(2, 1fr); }
+  .marcadores { grid-template-columns: repeat(2, minmax(0, 200px)); justify-content: end; }
+}
+
+/* Escritorio (referencia de diseño: 1440 px) */
+@media (min-width: 1024px) {
+  :root {
+    --fs-titulo: 2.5rem;      /* 40 px */
+    --fs-seccion: 1.75rem;    /* 28 px */
+    --fs-pregunta: 1.5rem;    /* 24 px */
+  }
+
+  .contenedor { padding-inline: var(--esp-8); }
+  .app-main { padding-block: var(--esp-12); }
+
+  .rejilla { grid-template-columns: repeat(3, 1fr); }
+}

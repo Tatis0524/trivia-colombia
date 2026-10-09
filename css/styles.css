@@ -1,0 +1,280 @@
+/* ==========================================================================
+   styles.css — Estilos generales, variables (design tokens) y componentes base
+   Fuente de verdad: guía de estilos de Trivia Colombia.
+   Enfoque mobile-first: estos estilos son la base (360–375 px).
+   Las adaptaciones a tableta/escritorio viven SOLO en responsive.css.
+   ========================================================================== */
+
+/* ---------- 1. Variables ---------- */
+:root {
+  /* Paleta (guía de estilos §2) */
+  --color-coral: #FF6B6B;
+  --color-amarillo: #FFD166;
+  --color-azul: #173B72;
+  --color-blanco-calido: #FFFDF7;
+  --color-acierto: #2E9D67;
+  --color-error: #D64545;
+  --color-gris-claro: #F1F3F5;
+  --color-gris-medio: #6B7280;
+  --color-azul-superficie: #10294F;
+  --color-blanco: #FFFFFF;
+
+  /* Tokens semánticos: los componentes usan ESTOS, no la paleta directa */
+  --fondo-app: var(--color-coral);
+  --superficie: var(--color-blanco-calido);
+  --texto: var(--color-azul);
+  --texto-secundario: var(--color-gris-medio);
+  --borde: var(--color-gris-claro);
+  --texto-sobre-fondo: var(--color-azul);
+
+  /* Tipografía (guía §3) */
+  --fuente-titulos: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --fuente-texto: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --fs-titulo: 1.75rem;      /* móvil 26–32 px  → escritorio 32–40 px (responsive.css) */
+  --fs-seccion: 1.375rem;    /* móvil 20–24 px  → escritorio 24–28 px */
+  --fs-subtitulo: 1.125rem;  /* 18–20 px */
+  --fs-texto: 1rem;          /* 16 px */
+  --fs-pequeno: 0.875rem;    /* 12–14 px */
+  --fs-pregunta: 1.125rem;   /* móvil 18–22 px  → escritorio 20–24 px */
+  --fs-boton: 1rem;          /* 14–16 px */
+
+  /* Espaciado: múltiplos de 4 px (guía §8) */
+  --esp-1: 4px;
+  --esp-2: 8px;
+  --esp-3: 12px;
+  --esp-4: 16px;
+  --esp-6: 24px;
+  --esp-8: 32px;
+  --esp-12: 48px;
+
+  /* Bordes y sombras */
+  --radio-campo: 10px;       /* campos y botones: 8–12 px */
+  --radio-tarjeta: 14px;     /* tarjetas: 12–16 px */
+  --radio-destacado: 18px;   /* contenedores destacados: 16–20 px */
+  --sombra-suave: 0 2px 8px rgba(23, 59, 114, 0.12);
+  --sombra-elevada: 0 6px 16px rgba(23, 59, 114, 0.18);
+
+  --transicion: 150ms ease;
+  --ancho-max: 1120px;
+}
+
+/* Tema oscuro (se activa con <html data-tema="oscuro">).
+   Valores PROVISIONALES: el diseño solo define #10294F como superficie oscura;
+   revisar cuando exista el mockup del tema oscuro. */
+:root[data-tema="oscuro"] {
+  --fondo-app: var(--color-azul-superficie);
+  --superficie: var(--color-azul);
+  --texto: var(--color-blanco);
+  --texto-secundario: var(--color-gris-claro);
+  --borde: rgba(255, 255, 255, 0.24);
+  --texto-sobre-fondo: var(--color-blanco);
+}
+
+/* ---------- 2. Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--fuente-texto);
+  font-size: var(--fs-texto);
+  line-height: 1.5;
+  color: var(--texto);
+  background: var(--fondo-app);
+  overflow-wrap: anywhere;   /* evita desbordes horizontales con textos largos */
+}
+
+h1, h2, h3 {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  line-height: 1.2;
+}
+
+p { margin: 0; }
+ul { margin: 0; padding: 0; list-style: none; }
+button, input { font: inherit; color: inherit; }
+img, svg { max-width: 100%; height: auto; }
+
+/* Foco visible para teclado (guía §4 y §10) */
+:focus-visible {
+  outline: 3px solid var(--color-azul);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px var(--color-blanco);
+}
+[tabindex="-1"]:focus { outline: none; box-shadow: none; }
+
+/* El atributo hidden SIEMPRE gana, aunque un componente defina display */
+[hidden] { display: none !important; }
+
+/* Enlace "Saltar al contenido" (accesibilidad) */
+.saltar-contenido {
+  position: absolute;
+  left: var(--esp-4);
+  top: -100px;
+  padding: var(--esp-2) var(--esp-4);
+  background: var(--color-blanco);
+  color: var(--color-azul);
+  border-radius: var(--radio-campo);
+  z-index: 100;
+}
+.saltar-contenido:focus { top: var(--esp-2); }
+
+/* ---------- 3. Estructura de la aplicación ---------- */
+.app { min-height: 100vh; display: flex; flex-direction: column; }
+
+.contenedor {
+  width: 100%;
+  max-width: var(--ancho-max);
+  margin-inline: auto;
+  padding-inline: var(--esp-4);
+}
+
+.app-header { border-bottom: 1px solid rgba(23, 59, 114, 0.18); }
+.app-header__interior {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-2) var(--esp-4);
+  padding-block: var(--esp-3);
+}
+
+.app-main { flex: 1; padding-block: var(--esp-6); }
+
+.app-footer { padding-block: var(--esp-4); font-size: var(--fs-pequeno); color: var(--texto-sobre-fondo); }
+.app-footer__interior { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--esp-2); }
+
+/* Marca */
+.marca {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--esp-2);
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+.marca__logo {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radio-campo);
+  background: var(--color-azul);
+  color: var(--color-blanco);
+  font-family: var(--fuente-titulos);
+  font-weight: 700;
+}
+.marca__texto { display: flex; flex-direction: column; line-height: 1.2; }
+.marca__nombre { font-family: var(--fuente-titulos); font-weight: 600; }
+.marca__lema { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.04em; }
+
+/* Navegación principal */
+.nav-principal__lista { display: flex; gap: var(--esp-2); }
+.nav-principal__enlace {
+  padding: var(--esp-2) var(--esp-3);
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: none;
+  font-family: var(--fuente-titulos);
+  font-weight: 500;
+  font-size: var(--fs-pequeno);
+  cursor: pointer;
+}
+.nav-principal__enlace[aria-current="page"] { border-bottom-color: var(--color-azul); font-weight: 600; }
+
+/* ---------- 4. Pantallas ---------- */
+.pantalla { display: flex; flex-direction: column; gap: var(--esp-6); }
+.pantalla__cabecera { display: flex; flex-direction: column; gap: var(--esp-2); }
+.pantalla__etiqueta { font-size: var(--fs-pequeno); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+.pantalla__titulo { font-size: var(--fs-titulo); font-weight: 700; }
+.pantalla__subtitulo { font-size: var(--fs-texto); }
+
+/* Utilidades de distribución reutilizables */
+.rejilla { display: grid; gap: var(--esp-4); grid-template-columns: 1fr; }
+.acciones { display: flex; flex-wrap: wrap; gap: var(--esp-3); }
+.marcadores { display: grid; gap: var(--esp-3); grid-template-columns: 1fr 1fr; }
+
+/* ---------- 5. Componentes base ---------- */
+
+/* Tarjeta (guía §5) */
+.tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-4);
+  padding: var(--esp-4);
+  background: var(--superficie);
+  color: var(--texto);
+  border-radius: var(--radio-tarjeta);
+  box-shadow: var(--sombra-suave);
+  border: 0;
+  min-width: 0;
+}
+.tarjeta__titulo, .tarjeta > legend { font-family: var(--fuente-titulos); font-size: var(--fs-subtitulo); font-weight: 600; }
+.grupo-opciones > legend { padding: 0; }
+
+/* Botones (guía §4) */
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-2);
+  min-height: 44px;                 /* objetivo táctil */
+  padding: var(--esp-2) var(--esp-6);
+  border: 2px solid transparent;
+  border-radius: var(--radio-campo);
+  font-family: var(--fuente-titulos);
+  font-size: var(--fs-boton);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--transicion), transform var(--transicion), box-shadow var(--transicion);
+}
+.boton--primario { background: var(--color-amarillo); color: var(--color-azul); }
+.boton--secundario { background: var(--color-blanco-calido); color: var(--color-azul); border-color: var(--color-azul); }
+.boton:hover { transform: translateY(-1px); box-shadow: var(--sombra-elevada); }
+.boton--primario:hover { background: #FFC94D; }
+.boton:active { transform: translateY(0); box-shadow: none; }
+.boton:disabled, .boton[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* Estados de respuesta (siempre acompañar con texto/icono, no solo color) */
+.boton--correcto { background: var(--color-acierto); border-color: var(--color-acierto); color: var(--color-blanco); }
+.boton--incorrecto { background: var(--color-error); border-color: var(--color-error); color: var(--color-blanco); }
+
+/* Botón de icono (configuración) */
+.boton-icono {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: var(--radio-campo);
+  background: var(--color-blanco-calido);
+  color: var(--color-azul);
+  cursor: pointer;
+}
+
+/* Campo de texto (guía §7) */
+.campo { display: flex; flex-direction: column; gap: var(--esp-2); }
+.campo__etiqueta { font-family: var(--fuente-titulos); font-weight: 600; }
+.campo__input {
+  min-height: 44px;
+  padding: var(--esp-2) var(--esp-3);
+  background: var(--color-blanco-calido);
+  color: var(--color-azul);
+  border: 2px solid var(--color-gris-claro);
+  border-radius: var(--radio-campo);
+}
+.campo__input:focus-visible { border-color: var(--color-azul); }
+.campo__input[aria-invalid="true"] { border-color: var(--color-error); }
+.campo__ayuda { font-size: var(--fs-pequeno); color: var(--color-gris-medio); }
+.campo__error { font-size: var(--fs-pequeno); font-weight: 600; color: var(--color-error); }
+
+/* Pregunta y opciones (contenedores; los estados se definirán al maquetar el juego) */
+.pregunta__enunciado { font-size: var(--fs-pregunta); font-weight: 600; }
+.opciones { display: grid; gap: var(--esp-3); grid-template-columns: 1fr; }
+
+/* Mensajes accesibles */
+.mensajes { position: fixed; left: var(--esp-4); right: var(--esp-4); bottom: var(--esp-4); pointer-events: none; }

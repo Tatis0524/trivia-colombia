@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="claro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trivia Colombia</title>
+  <meta name="description" content="Trivia Colombia: juego web de preguntas y respuestas sobre la geografía, historia, cultura, deportes y naturaleza de Colombia.">
+  <meta name="theme-color" content="#FF6B6B">
+
+  <!-- Evita la petición automática a /favicon.ico hasta tener el logo definitivo (assets/img) -->
+  <link rel="icon" href="data:,">
+
+  <!-- Tipografías de la guía de estilos: Poppins (títulos, botones) e Inter (texto) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Poppins:wght@500;600;700&amp;display=swap">
+
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
+
+  <div id="app" class="app">
+
+    <!-- ENCABEZADO (componente persistente en todas las pantallas) -->
+    <header class="app-header">
+      <div class="app-header__interior contenedor">
+        <button type="button" class="marca" data-ir="inicio" aria-label="Trivia Colombia, ir al inicio">
+          <span class="marca__logo" aria-hidden="true">TC</span>
+          <span class="marca__texto">
+            <span class="marca__nombre">Trivia Colombia</span>
+            <span class="marca__lema">Un país, mil descubrimientos</span>
+          </span>
+        </button>
+
+        <nav class="nav-principal" aria-label="Navegación principal">
+          <ul class="nav-principal__lista">
+            <li><button type="button" class="nav-principal__enlace" data-ir="inicio">Inicio</button></li>
+            <li><button type="button" class="nav-principal__enlace" data-ir="instrucciones">Instrucciones</button></li>
+            <li><button type="button" class="nav-principal__enlace" data-ir="ranking">Ranking</button></li>
+          </ul>
+        </nav>
+
+        <button type="button" class="boton-icono" data-ir="configuracion" aria-label="Configuración general">
+          <!-- Icono de engranaje: pendiente en assets/img -->
+          <span aria-hidden="true">⚙</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENIDO: una sola pantalla visible a la vez (la navegación vive en js/app.js) -->
+    <main id="contenido" class="app-main contenedor" tabindex="-1">
+
+      <!-- 1. INICIO -->
+      <section id="pantalla-inicio" class="pantalla" data-pantalla="inicio" aria-labelledby="titulo-inicio">
+        <header class="pantalla__cabecera">
+          <p class="pantalla__etiqueta">Descubre. Juega. Aprende.</p>
+          <h1 id="titulo-inicio" class="pantalla__titulo" tabindex="-1">¿Cuánto sabes de Colombia?</h1>
+          <p class="pantalla__subtitulo">De los Andes al Caribe, cada pregunta te acerca a nuestro país. ¡Acepta el reto!</p>
+        </header>
+
+        <form id="form-jugador" class="tarjeta" novalidate>
+          <div class="campo">
+            <label for="nombre-jugador" class="campo__etiqueta">¿Cómo te llamas?</label>
+            <input id="nombre-jugador" name="nombre" class="campo__input" type="text"
+                   minlength="2" maxlength="20" required autocomplete="off"
+                   aria-describedby="nombre-ayuda nombre-error">
+            <p id="nombre-ayuda" class="campo__ayuda">Tu nombre aparecerá en los resultados y en el ranking (entre 2 y 20 caracteres).</p>
+            <p id="nombre-error" class="campo__error" role="alert" hidden></p>
+          </div>
+          <div class="acciones">
+            <button type="submit" id="btn-jugar" class="boton boton--primario">Jugar</button>
+            <button type="button" class="boton boton--secundario" data-ir="instrucciones">Instrucciones</button>
+            <button type="button" class="boton boton--secundario" data-ir="ranking">Ranking</button>
+            <button type="button" class="boton boton--secundario" data-ir="configuracion">Configuración</button>
+          </div>
+        </form>
+        <!-- Pendiente (ui.js): datos rápidos "10 preguntas · 20 s por pregunta · 6 categorías" -->
+      </section>
+
+      <!-- 2. INSTRUCCIONES -->
+      <section id="pantalla-instrucciones" class="pantalla" data-pantalla="instrucciones" aria-labelledby="titulo-instrucciones" hidden>
+        <header class="pantalla__cabecera">
+          <p class="pantalla__etiqueta">Antes de comenzar</p>
+          <h1 id="titulo-instrucciones" class="pantalla__titulo" tabindex="-1">Así se juega</h1>
+          <p class="pantalla__subtitulo">Un reto corto, muchos descubrimientos. Estas son las reglas.</p>
+        </header>
+        <div id="instrucciones-resumen" class="rejilla"></div>      <!-- 10 preguntas · 4 opciones · 20 s -->
+        <div id="instrucciones-puntuacion" class="tarjeta"></div>   <!-- Pendiente: decisión de puntuación (ver README) -->
+        <div id="instrucciones-comodines" class="tarjeta"></div>    <!-- 50/50 y +10 segundos -->
+        <div class="acciones">
+          <button type="button" class="boton boton--secundario" data-ir="inicio">Volver</button>
+          <button type="button" class="boton boton--primario" data-ir="inicio">Comenzar</button>
+        </div>
+      </section>
+
+      <!-- 3. CONFIGURACIÓN DE PARTIDA -->
+      <section id="pantalla-configuracion-partida" class="pantalla" data-pantalla="configuracion-partida" aria-labelledby="titulo-configuracion-partida" hidden>
+        <header class="pantalla__cabecera">
+          <p class="pantalla__etiqueta">Prepara tu reto</p>
+          <h1 id="titulo-configuracion-partida" class="pantalla__titulo" tabindex="-1">¿Qué vamos a descubrir?</h1>
+          <p id="config-jugador" class="pantalla__subtitulo"></p>
+        </header>
+        <fieldset class="tarjeta grupo-opciones">
+          <legend>Categoría</legend>
+          <div id="categorias-lista" class="rejilla"></div>         <!-- Renderiza ui.js desde CATEGORIAS -->
+        </fieldset>
+        <fieldset class="tarjeta grupo-opciones">
+          <legend>Dificultad</legend>
+          <div id="dificultad-lista" class="rejilla"></div>         <!-- Renderiza ui.js desde DIFICULTADES -->
+        </fieldset>
+        <aside id="mejor-puntaje" class="tarjeta" aria-label="Mejor puntaje en esta combinación"></aside>
+        <div class="acciones">
+          <button type="button" id="btn-comenzar" class="boton boton--primario">Comenzar partida</button>
+        </div>
+      </section>
+
+      <!-- 4. JUEGO -->
+      <section id="pantalla-juego" class="pantalla" data-pantalla="juego" aria-labelledby="titulo-juego" hidden>
+        <header class="pantalla__cabecera">
+          <p class="pantalla__etiqueta">Partida en curso</p>
+          <h1 id="titulo-juego" class="pantalla__titulo" tabindex="-1">Partida en curso</h1>
+          <p id="juego-contexto" class="pantalla__subtitulo"></p>
+        </header>
+        <div class="marcadores">
+          <div id="juego-puntaje"></div>
+          <div id="juego-temporizador" role="timer" aria-live="off"></div>
+        </div>
+        <article class="tarjeta pregunta">
+          <div id="juego-progreso"></div>                            <!-- barra "Pregunta n de 10" -->
+          <h2 id="juego-enunciado" class="pregunta__enunciado"></h2>
+          <div id="juego-opciones" class="opciones"></div>           <!-- 4 botones de respuesta -->
+        </article>
+        <aside class="tarjeta" aria-label="Comodines">
+          <h2 class="tarjeta__titulo">Tus comodines</h2>
+          <div class="acciones">
+            <button type="button" id="btn-comodin-5050" class="boton boton--primario">50/50</button>
+            <button type="button" id="btn-comodin-tiempo" class="boton boton--primario">+10 segundos</button>
+          </div>
+        </aside>
+        <div class="acciones">
+          <button type="button" id="btn-salir-partida" class="boton boton--secundario">Salir</button>
+        </div>
+      </section>
+
+      <!-- 5. RETROALIMENTACIÓN -->
+      <section id="pantalla-retroalimentacion" class="pantalla" data-pantalla="retroalimentacion" aria-labelledby="titulo-retroalimentacion" hidden>
+        <header class="pantalla__cabecera">
+          <p id="feedback-contexto" class="pantalla__etiqueta"></p>
+          <h1 id="titulo-retroalimentacion" class="pantalla__titulo" tabindex="-1">Cada pregunta enseña algo</h1>
+        </header>
+        <div id="feedback-estado" role="status"></div>               <!-- ¡Correcto! / Incorrecta + puntos -->
+        <article class="tarjeta pregunta">
+          <h2 id="feedback-enunciado" class="pregunta__enunciado"></h2>
+          <div id="feedback-opciones" class="opciones"></div>        <!-- correcta en verde, incorrecta en rojo -->
+        </article>
+        <section id="feedback-explicacion" class="tarjeta" aria-label="Explicación"></section>
+        <div class="acciones">
+          <button type="button" id="btn-siguiente" class="boton boton--primario">Siguiente pregunta</button>
+        </div>
+      </section>
+
+      <!-- 6. RESULTADO -->
+      <section id="pantalla-resultado" class="pantalla" data-pantalla="resultado" aria-labelledby="titulo-resultado" hidden>
+        <header class="pantalla__cabecera">
+          <p class="pantalla__etiqueta">Partida completada</p>
+          <h1 id="titulo-resultado" class="pantalla__titulo" tabindex="-1">Partida completada</h1>
+          <p id="resultado-mensaje" class="pantalla__subtitulo"></p>
+        </header>
+        <div id="resultado-resumen" class="rejilla"></div>           <!-- puntaje, aciertos, %, tiempo total -->
+        <div id="resultado-posicion" class="tarjeta"></div>          <!-- puesto en el ranking / mejor marca -->
+        <div id="resultado-falladas" class="tarjeta"></div>          <!-- revisión de preguntas falladas -->
+        <div class="acciones">
+          <button type="button" id="btn-jugar-de-nuevo" class="boton boton--primario">Jugar de nuevo</button>
+          <button type="button" class="boton boton--secundario" data-ir="ranking">Ver ranking</button>
+          <button type="button" class="boton boton--secundario" data-ir="inicio">Inicio</button>
+        </div>
+      </section>
+
+      <!-- 7. RANKING Y ESTADÍSTICAS -->
+      <section id="pantalla-ranking" class="pantalla" data-pantalla="ranking" aria-labelledby="titulo-ranking" hidden>
+        <header class="pantalla__cabecera">
+          <p class="pantalla__etiqueta">La curiosidad tiene su podio</p>
+          <h1 id="titulo-ranking" class="pantalla__titulo" tabindex="-1">Ranking Colombia</h1>
+          <p class="pantalla__subtitulo">Los 10 mejores resultados guardados en este dispositivo.</p>
+        </header>
+        <div id="ranking-estadisticas" class="rejilla"></div>        <!-- partidas, % aciertos, mejor puntaje, mejor categoría -->
+        <div id="ranking-tabla" class="tarjeta"></div>              <!-- tabla top 10 (tarjetas en móvil) -->
+        <div class="acciones">
+          <button type="button" class="boton boton--secundario" data-ir="inicio">Volver</button>
+          <button type="button" id="btn-borrar-ranking" class="boton boton--secundario">Borrar ranking</button>
+        </div>
+      </section>
+
+      <!-- 8. CONFIGURACIÓN GENERAL -->
+      <section id="pantalla-configuracion" class="pantalla" data-pantalla="configuracion" aria-labelledby="titulo-configuracion" hidden>
+        <header class="pantalla__cabecera">
+          <p class="pantalla__etiqueta">A tu manera</p>
+          <h1 id="titulo-configuracion" class="pantalla__titulo" tabindex="-1">Configuración</h1>
+          <p class="pantalla__subtitulo">Pequeños ajustes para disfrutar cada descubrimiento.</p>
+        </header>
+        <div class="tarjeta">
+          <h2 class="tarjeta__titulo">Sonido</h2>
+          <label class="interruptor">
+            <input type="checkbox" id="pref-sonido" role="switch" checked>
+            <span>Efectos al responder y al completar una partida</span>
+          </label>
+        </div>
+        <fieldset class="tarjeta grupo-opciones">
+          <legend>Tema</legend>
+          <label><input type="radio" name="pref-tema" value="claro" checked> Claro</label>
+          <label><input type="radio" name="pref-tema" value="oscuro"> Oscuro</label>
+        </fieldset>
+        <div class="acciones">
+          <button type="button" class="boton boton--secundario" data-ir="inicio">Inicio</button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- PIE (componente persistente) -->
+    <footer class="app-footer">
+      <div class="app-footer__interior contenedor">
+        <p>Aprender también es jugar · Hecho con curiosidad por Colombia</p>
+        <p>Trivia Colombia · 2026</p>
+      </div>
+    </footer>
+
+    <!-- Mensajes accesibles (aciertos, errores, validaciones) -->
+    <div id="mensajes" class="mensajes" aria-live="polite"></div>
+  </div>
+
+  <noscript>Trivia Colombia necesita JavaScript activado para funcionar.</noscript>
+
+  <!-- Scripts clásicos con defer. El orden es el de dependencias:
+       datos → almacenamiento → lógica → interfaz → punto de entrada -->
+  <script src="js/preguntas.js" defer></script>
+  <script src="js/almacenamiento.js" defer></script>
+  <script src="js/juego.js" defer></script>
+  <script src="js/ui.js" defer></script>
+  <script src="js/app.js" defer></script>
+</body>
+</html>
