@@ -7,12 +7,18 @@
    ========================================================================== */
 
 /* Reglas que coinciden en el Word y en el diseño.
-   El sistema de PUNTUACIÓN no se define aquí todavía: hay una decisión abierta (ver README). */
+   La PUNTUACIÓN la fija el mockup de alta fidelidad (docs/diseno/notas-mockups.md):
+   +100 por acierto, sin bonificaciones ni penalizaciones, máximo 1.000 puntos.
+   Esto difiere del Word §6.1 (bonos por rapidez, racha, penalización y multiplicador):
+   se implementa el diseño y la diferencia queda documentada en el README. */
 const REGLAS = {
   preguntasPorPartida: 10,
   tiempoPorPregunta: 20,     // segundos
   tiempoExtra: 10,           // segundos que suma el comodín
-  opcionesPorPregunta: 4
+  opcionesPorPregunta: 4,
+  puntosPorAcierto: 100,
+  puntosPorError: 0,
+  puntajeMaximo: 1000        // 10 aciertos × 100
 };
 
 const Juego = {

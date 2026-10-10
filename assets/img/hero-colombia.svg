@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="460" height="630" viewBox="0 0 460 630" role="img" aria-label="Marcador de posición de la ilustración">
+  <!-- Marcador de posición de la ilustración de portada.
+       Sustituir por el asset exportado desde Figma conservando el mismo nombre. -->
+  <rect width="460" height="630" fill="#173B72"/>
+  <g fill="none" stroke="#FFFDF7" stroke-opacity="0.28" stroke-width="2" stroke-linejoin="round">
+    <path d="M-20 470 L110 330 L200 430 L280 340 L480 500"/>
+    <path d="M-20 540 L120 420 L210 500 L300 420 L480 560"/>
+  </g>
+  <g fill="#FFFDF7" fill-opacity="0.75" font-family="Poppins, Segoe UI, sans-serif" text-anchor="middle">
+    <text x="230" y="300" font-size="22" font-weight="600">Ilustración pendiente</text>
+    <text x="230" y="330" font-size="15" fill="#FFFDF7" fill-opacity="0.6">Exportar desde Figma a</text>
+    <text x="230" y="352" font-size="15" fill="#FFFDF7" fill-opacity="0.6">assets/img/hero-colombia.svg</text>
+  </g>
+</svg>

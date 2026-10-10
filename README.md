@@ -6,7 +6,7 @@ Proyecto académico — Universidad de Santander (UDES) · Desarrollo Full Stack
 
 **Estudiante:** `[PENDIENTE: nombre del estudiante]`
 
-> **Estado actual: etapa 1 — estructura inicial.** Existen la estructura, los contenedores y la navegación entre pantallas. La lógica del juego, el banco de preguntas, el ranking y los estilos completos de cada pantalla **aún no están implementados**.
+> **Estado actual: etapa 2 — maquetación completa.** Las 8 pantallas de escritorio están maquetadas con HTML semántico, CSS con variables de la guía de estilos y navegación funcional (incluidos enlaces profundos por hash, por ejemplo `index.html#ranking`). La lógica del juego y el banco de preguntas **llegan en la etapa 3**; mientras tanto, las pantallas 4, 5 y 6 muestran estados vacíos con acciones definidas.
 
 ## Enlaces de entrega
 
@@ -106,22 +106,50 @@ Orden de carga de los scripts (por dependencias): `preguntas` → `almacenamient
 | Configuración | Sonido y tema claro/oscuro, guardados en localStorage | — |
 | Transversal | Responsive desde 360 px, accesible, fiel al diseño | RNF-01, 03, 05, 06 |
 
-## Decisiones abiertas (resolver antes de implementar `juego.js`)
+## Decisiones de diseño
 
-1. **Sistema de puntuación.** El Word (§6.1) define +100 por acierto, +5 por segundo restante (máx. +100), +50 por racha de 3, −30 por comodín y multiplicador por dificultad. Los diseños muestran una versión simplificada: +100 por acierto, sin bonificaciones ni penalización, máximo 1.000 puntos (marcada como "Propuesta" en el wireframe).
-2. **Tamaño del banco de preguntas.** El Word indica "al menos 50 preguntas" (§2.2 y §13) y también "mínimo 30 por categoría" (§6.2), es decir, 150 como mínimo.
-3. **Contenido del ranking.** El Word pide el top 10 por puntaje; el mockup dice "las 10 partidas más recientes, ordenadas por puntaje".
-4. **Tema oscuro.** No existe mockup; los valores en `styles.css` son provisionales.
-5. **Enlace "Jugar" del menú.** Aparece en el mockup, pero se omitió porque el nombre del jugador debe ingresarse primero (RF-01).
+1. **Sistema de puntuación (resuelta).** Se implementa la versión de los mockups: +100 por acierto, sin bonificaciones ni penalización, máximo 1.000 puntos (10 × 100). Difiere del Word §6.1, que incluía bono por tiempo restante, bono por racha, penalización por comodín y multiplicador por dificultad.
+2. **Enlaces profundos (resuelta).** Cada pantalla tiene un enlace por hash (`#inicio`, `#juego`, `#ranking`…) para poder revisar las 8 pantallas sin jugar una partida completa.
+3. **Pantallas sin motor (resuelta).** Juego, Retroalimentación y Resultado muestran estados vacíos con acción definida hasta que la etapa 3 conecte el motor.
+4. **Ilustración de Inicio (pendiente).** `assets/img/hero-colombia.svg` es un marcador de posición; falta exportar el asset desde Figma.
+5. **Textos dinámicos (parcialmente pendientes).** El mockup define los textos de "Todas" y "Medio"; las pistas de Fácil/Difícil y algunas variantes de resultado/retroalimentación son plantillas provisionales (marcadas en `docs/diseno/notas-mockups.md`).
+6. **Tema oscuro.** No existe mockup; los valores en `styles.css` son provisionales.
+7. **Tamaño del banco de preguntas (para la etapa 3).** El Word indica "al menos 50 preguntas" (§2.2 y §13) y también "mínimo 30 por categoría" (§6.2), es decir, 150 como mínimo.
+8. **Contenido del ranking (para la etapa 3).** El Word pide el top 10 por puntaje; el mockup dice "las 10 partidas más recientes, ordenadas por puntaje". `almacenamiento.js` implementa top 10 por puntaje con desempate por fecha.
 
 ## Plan de etapas
 
-- [x] Etapa 1 — Estructura inicial (este commit).
-- [ ] Etapa 2 — Maquetación HTML/CSS de las 8 pantallas.
+- [x] Etapa 1 — Estructura inicial.
+- [x] Etapa 2 — Maquetación HTML/CSS de las 8 pantallas (este commit).
 - [ ] Etapa 3 — Lógica del juego y banco de preguntas.
 - [ ] Etapa 4 — Comodines, ranking, estadísticas, sonidos y tema oscuro.
 - [ ] Etapa 5 — Pruebas, ajustes frente al diseño, despliegue en Vercel y video.
 
+## Verificación de la maquetación (etapa 2)
+
+- Las 8 pantallas se compararon con `docs/diseno/mockup-alta-01..08.jpg` a 1440 px (capturas con Chrome headless). Diferencias corregidas durante la etapa: control de dificultad en fila, tarjetas de categoría con ícono superior, unificación de categoría + dificultad en una tarjeta, cifra grande de mejor puntaje y ocultamiento de tarjetas vacías en Retroalimentación.
+- `node --check` sin errores en los 5 archivos JS.
+- El ranking con datos de ejemplo renderiza correctamente (estadísticas, tabla y resaltado del jugador).
+
+## Pendientes para la etapa 3
+
+- Exportar la ilustración de Inicio desde Figma a `assets/img/hero-colombia.svg`.
+- Definir textos de pista de Fácil y Difícil.
+- Definir variantes de textos de Resultado (0 aciertos, récord) y Retroalimentación (respuesta correcta).
+- Completar los enlaces de entrega en la tabla superior.
+
 ## Capturas de pantalla
 
 `[PENDIENTE: capturas del juego terminado]`
+
+## Comandos útiles
+
+```bash
+# Sintaxis de los scripts
+node --check js/app.js
+
+# Vista previa local (o Live Server en VS Code)
+python -m http.server 5173
+# Captura de una pantalla a 1440 px con Chrome headless
+chrome --headless=new --disable-gpu --hide-scrollbars --virtual-time-budget=4000 --window-size=1440,1100 --screenshot=salida.png "http://127.0.0.1:5173/index.html#ranking"
+```

@@ -21,217 +21,639 @@
 <body>
   <a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
 
-  <div id="app" class="app">
+  <!-- ============================================================================
+       SPRITE DE ICONOS (íconos lineales SVG, guía de estilos §6)
+       Se renderizan con <svg class="icono" aria-hidden="true"><use href="#i-…"></use></svg>
+       ========================================================================== -->
+  <svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <g id="trazo-base" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></g>
+    </defs>
+    <symbol id="i-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M7 4.5l12 7.5-12 7.5z"/></symbol>
+    <symbol id="i-libro" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 6.6S9.6 4.6 4 4.6v13c5.6 0 8 2 8 2s2.4-2 8-2v-13c-5.6 0-8 2-8 2z"/><path d="M12 6.6V19.6"/></symbol>
+    <symbol id="i-trofeo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M16 5.5h3a3 3 0 0 1 0 6h-1.2M8 5.5H5a3 3 0 0 0 0 6h1.2"/><path d="M12 13v4M9 20h6M9.5 17.5h5"/></symbol>
+    <symbol id="i-engranaje" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><circle cx="12" cy="12" r="3.1"/><path d="M19.1 14.4a1.6 1.6 0 0 0 .3 1.8l.1.1a1.9 1.9 0 1 1-2.7 2.7l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5v.2a1.9 1.9 0 1 1-3.8 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a1.9 1.9 0 1 1-2.7-2.7l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a1.9 1.9 0 1 1 0-3.8h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a1.9 1.9 0 1 1 2.7-2.7l.1.1a1.6 1.6 0 0 0 1.8.3h.1a1.6 1.6 0 0 0 1-1.5V3a1.9 1.9 0 1 1 3.8 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a1.9 1.9 0 1 1 2.7 2.7l-.1.1a1.6 1.6 0 0 0-.3 1.8v.1a1.6 1.6 0 0 0 1.5 1h.2a1.9 1.9 0 1 1 0 3.8h-.1a1.6 1.6 0 0 0-1.5 1z"/></symbol>
+    <symbol id="i-destello" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M11 3.5l1.7 4.1 4.1 1.7-4.1 1.7L11 15.1 9.3 11 5.2 9.3l4.1-1.7z"/><path d="M17.8 14.6l.8 1.9 1.9.8-1.9.8-.8 1.9-.8-1.9-1.9-.8 1.9-.8z"/></symbol>
+    <symbol id="i-persona" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.6"/><path d="M4.8 20c.6-3.6 3.7-5.6 7.2-5.6s6.6 2 7.2 5.6"/></symbol>
+    <symbol id="i-lista" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 6.4l1.7 1.7 3.1-3.1M3.5 12.4l1.7 1.7 3.1-3.1M3.5 18.4l1.7 1.7 3.1-3.1"/><path d="M11 6.4h9.5M11 12.4h9.5M11 18.4h9.5"/></symbol>
+    <symbol id="i-cursor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M5 3.5l6.4 16.6 2.2-6.4 6.4-2.2z"/></symbol>
+    <symbol id="i-cronometro" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2.5h5"/><circle cx="12" cy="13.5" r="7.6"/><path d="M12 9.6v3.9l2.6 1.9"/><path d="M18.8 6.6l1.4-1.4"/></symbol>
+    <symbol id="i-flecha-izq" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 12H4.8"/><path d="M10.8 5.8L4.6 12l6.2 6.2"/></symbol>
+    <symbol id="i-flecha-der" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12h14.7"/><path d="M13.2 5.8L19.4 12l-6.2 6.2"/></symbol>
+    <symbol id="i-cuadricula" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3.6" y="3.6" width="7" height="7" rx="1.6"/><rect x="13.4" y="3.6" width="7" height="7" rx="1.6"/><rect x="3.6" y="13.4" width="7" height="7" rx="1.6"/><rect x="13.4" y="13.4" width="7" height="7" rx="1.6"/></symbol>
+    <symbol id="i-montana" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M2.6 20h18.8L14.6 7.2l-3.3 5.6-2.1-3z"/></symbol>
+    <symbol id="i-monumento" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20.6h18M5 10.6h14M6.5 10.6v8M10 10.6v8M14 10.6v8M17.5 10.6v8M12 3l8.5 5H3.5z"/></symbol>
+    <symbol id="i-musica" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><circle cx="6.8" cy="17.4" r="2.9"/><circle cx="17.4" cy="15.4" r="2.9"/><path d="M9.7 17.4V6.4l10.6-2.2v11.2"/><path d="M9.7 9.2l10.6-2.2"/></symbol>
+    <symbol id="i-balon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><circle cx="12" cy="12" r="8.8"/><path d="M12 7.2l3.9 2.8-1.5 4.6h-4.8L8.1 10z"/><path d="M12 3.2v4M3.7 9.8l4.4.9M20.3 9.8l-4.4.9M7.4 20.2l2.2-5.6M16.6 20.2l-2.2-5.6"/></symbol>
+    <symbol id="i-hoja" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M11.2 20.4A7.2 7.2 0 0 1 4 13.2C4 7 12.2 4 20 4c0 8-3.2 16.4-8.8 16.4z"/><path d="M4.4 20.8c2.6-7.6 7.4-11.6 13.2-12.8"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.6 12.6l4.8 4.8L19.4 6.6"/></symbol>
+    <symbol id="i-circulo-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.8"/><path d="M8 12.4l2.8 2.8L16 9.6"/></symbol>
+    <symbol id="i-circulo-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.8"/><path d="M9.2 9.2l5.6 5.6M14.8 9.2l-5.6 5.6"/></symbol>
+    <symbol id="i-quitar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h5v5M20 10h-5V5"/><path d="M14.2 9.8L20 4M4 20l5.8-5.8"/></symbol>
+    <symbol id="i-salir" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 20.5H5.6a1.9 1.9 0 0 1-1.9-1.9V5.4a1.9 1.9 0 0 1 1.9-1.9h3.9"/><path d="M15.6 16.6l4.6-4.6-4.6-4.6M20.2 12H9.2"/></symbol>
+    <symbol id="i-estrella" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3.6l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.8l5.9-.9z"/></symbol>
+    <symbol id="i-basura" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9.5 7V4.2h5V7M6.4 7l1 13.4h9.2L17.6 7"/><path d="M10.2 11v6M13.8 11v6"/></symbol>
+    <symbol id="i-altavoz" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11.2 4.6L6.6 8.6H3.4v6.8h3.2l4.6 4z"/><path d="M15.4 8.8a4.6 4.6 0 0 1 0 6.4M18.2 6a8.6 8.6 0 0 1 0 12"/></symbol>
+    <symbol id="i-paleta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3.2a8.8 8.8 0 1 0 0 17.6c1.5 0 2.1-1 1.6-2.1-.6-1.3.3-2.6 1.7-2.6h1.7a3.8 3.8 0 0 0 3.8-3.8c0-4.6-4.2-9.1-8.8-9.1z"/><circle cx="7.6" cy="11.6" r="1.1"/><circle cx="10.2" cy="7.6" r="1.1"/><circle cx="15" cy="7.9" r="1.1"/></symbol>
+    <symbol id="i-sol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.5 1.5M17.1 17.1l1.5 1.5M18.6 5.4l-1.5 1.5M6.9 17.1l-1.5 1.5"/></symbol>
+    <symbol id="i-luna" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M20.4 14.6A8.8 8.8 0 0 1 9.4 3.6a8.8 8.8 0 1 0 11 11z"/></symbol>
+    <symbol id="i-casa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.8 11L12 4l8.2 7"/><path d="M6.2 9.8v10.4h11.6V9.8"/><path d="M10 20.2v-5h4v5"/></symbol>
+    <symbol id="i-reiniciar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.6 5.2v5.6h5.6"/><path d="M4.2 10.8a8.4 8.4 0 1 1 1.6 7.4"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.8"/><path d="M12 11v5.4M12 7.8h.01"/></symbol>
+    <symbol id="i-medalla" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><circle cx="12" cy="14.6" r="4.8"/><path d="M9 9.6L6.2 3.4h11.6L15 9.6"/><path d="M12 12.6l.9 1.8 2 .3-1.4 1.4.3 2-1.8-.9-1.8.9.3-2-1.4-1.4 2-.3z"/></symbol>
+    <symbol id="i-alerta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.8"/><path d="M12 7.6v5M12 16.2h.01"/></symbol>
+  </svg>
 
-    <!-- ENCABEZADO (componente persistente en todas las pantallas) -->
-    <header class="app-header">
-      <div class="app-header__interior contenedor">
+  <div class="app">
+
+    <!-- ==========================================================================
+         ENCABEZADO — componente persistente (mockup: logo + nav + configuración)
+         ======================================================================= -->
+    <header class="cabecera">
+      <div class="cabecera__interior contenedor">
         <button type="button" class="marca" data-ir="inicio" aria-label="Trivia Colombia, ir al inicio">
           <span class="marca__logo" aria-hidden="true">TC</span>
           <span class="marca__texto">
             <span class="marca__nombre">Trivia Colombia</span>
-            <span class="marca__lema">Un país, mil descubrimientos</span>
+            <span class="marca__lema">Un país mil descubrimientos</span>
           </span>
         </button>
 
-        <nav class="nav-principal" aria-label="Navegación principal">
-          <ul class="nav-principal__lista">
-            <li><button type="button" class="nav-principal__enlace" data-ir="inicio">Inicio</button></li>
-            <li><button type="button" class="nav-principal__enlace" data-ir="instrucciones">Instrucciones</button></li>
-            <li><button type="button" class="nav-principal__enlace" data-ir="ranking">Ranking</button></li>
+        <nav class="nav" aria-label="Navegación principal">
+          <ul class="nav__lista">
+            <li><button type="button" class="nav__enlace" data-ir="inicio">Inicio</button></li>
+            <li><button type="button" class="nav__enlace" data-ir="jugar">Jugar</button></li>
+            <li><button type="button" class="nav__enlace" data-ir="instrucciones">Instrucciones</button></li>
+            <li><button type="button" class="nav__enlace" data-ir="ranking">Ranking</button></li>
           </ul>
         </nav>
 
         <button type="button" class="boton-icono" data-ir="configuracion" aria-label="Configuración general">
-          <!-- Icono de engranaje: pendiente en assets/img -->
-          <span aria-hidden="true">⚙</span>
+          <svg class="icono" aria-hidden="true"><use href="#i-engranaje"></use></svg>
         </button>
       </div>
     </header>
 
-    <!-- CONTENIDO: una sola pantalla visible a la vez (la navegación vive en js/app.js) -->
-    <main id="contenido" class="app-main contenedor" tabindex="-1">
+    <!-- ==========================================================================
+         CONTENIDO — las 8 pantallas; sólo una visible a la vez (js/app.js)
+         ======================================================================= -->
+    <main id="contenido" class="principal contenedor" tabindex="-1">
 
-      <!-- 1. INICIO -->
-      <section id="pantalla-inicio" class="pantalla" data-pantalla="inicio" aria-labelledby="titulo-inicio">
-        <header class="pantalla__cabecera">
-          <p class="pantalla__etiqueta">Descubre. Juega. Aprende.</p>
-          <h1 id="titulo-inicio" class="pantalla__titulo" tabindex="-1">¿Cuánto sabes de Colombia?</h1>
-          <p class="pantalla__subtitulo">De los Andes al Caribe, cada pregunta te acerca a nuestro país. ¡Acepta el reto!</p>
-        </header>
+      <!-- ---------------------------------------------------------------- 1. INICIO -->
+      <section class="pantalla pantalla--inicio" data-pantalla="inicio" aria-labelledby="titulo-inicio">
+        <div class="inicio__columnas">
+          <div class="inicio__principal">
+            <p class="pildora">
+              <svg class="icono" aria-hidden="true"><use href="#i-destello"></use></svg>
+              Descubre. Juega. Aprende.
+            </p>
 
-        <form id="form-jugador" class="tarjeta" novalidate>
-          <div class="campo">
-            <label for="nombre-jugador" class="campo__etiqueta">¿Cómo te llamas?</label>
-            <input id="nombre-jugador" name="nombre" class="campo__input" type="text"
-                   minlength="2" maxlength="20" required autocomplete="off"
-                   aria-describedby="nombre-ayuda nombre-error">
-            <p id="nombre-ayuda" class="campo__ayuda">Tu nombre aparecerá en los resultados y en el ranking (entre 2 y 20 caracteres).</p>
-            <p id="nombre-error" class="campo__error" role="alert" hidden></p>
+            <h1 id="titulo-inicio" class="titulo titulo--inicio" tabindex="-1">¿Cuánto sabes de Colombia?</h1>
+            <p class="subtitulo">De los Andes al Caribe, cada pregunta te acerca a nuestro país. ¡Acepta el reto!</p>
+
+            <form id="form-jugador" class="tarjeta tarjeta--formulario" novalidate>
+              <div class="campo">
+                <label class="campo__etiqueta" for="nombre-jugador">¿Cómo te llamas?</label>
+                <div class="campo__caja">
+                  <svg class="icono campo__icono" aria-hidden="true"><use href="#i-persona"></use></svg>
+                  <input class="campo__input" id="nombre-jugador" name="nombre" type="text"
+                         minlength="2" maxlength="20" autocomplete="off" spellcheck="false"
+                         aria-describedby="nombre-ayuda nombre-error">
+                </div>
+                <p class="campo__ayuda" id="nombre-ayuda">Este nombre aparecerá en el ranking.</p>
+                <p class="campo__error" id="nombre-error" role="alert" hidden></p>
+              </div>
+            </form>
+
+            <button type="button" id="btn-jugar" class="boton boton--primario boton--ancho">
+              <svg class="icono" aria-hidden="true"><use href="#i-play"></use></svg>
+              Jugar
+            </button>
+
+            <div class="acciones acciones--par">
+              <button type="button" class="boton boton--secundario boton--ancho" data-ir="instrucciones">
+                <svg class="icono" aria-hidden="true"><use href="#i-libro"></use></svg>
+                Instrucciones
+              </button>
+              <button type="button" class="boton boton--secundario boton--ancho" data-ir="ranking">
+                <svg class="icono" aria-hidden="true"><use href="#i-trofeo"></use></svg>
+                Ranking
+              </button>
+            </div>
+
+            <button type="button" class="boton boton--texto" data-ir="configuracion">
+              <svg class="icono" aria-hidden="true"><use href="#i-engranaje"></use></svg>
+              Configuración
+            </button>
           </div>
-          <div class="acciones">
-            <button type="submit" id="btn-jugar" class="boton boton--primario">Jugar</button>
-            <button type="button" class="boton boton--secundario" data-ir="instrucciones">Instrucciones</button>
-            <button type="button" class="boton boton--secundario" data-ir="ranking">Ranking</button>
-            <button type="button" class="boton boton--secundario" data-ir="configuracion">Configuración</button>
+
+          <figure class="inicio__visual">
+            <!-- Imagen de Figma: por ahora marcador de posición (assets/img/hero-colombia.svg) -->
+            <img class="inicio__ilustracion" src="assets/img/hero-colombia.svg" width="460" height="630"
+                 alt="Marcador de posición de la ilustración de portada (pendiente de exportar desde Figma).">
+            <p class="pildora inicio__visual-etiqueta">
+              <svg class="icono" aria-hidden="true"><use href="#i-montana"></use></svg>
+              Colombia, qué maravilla
+            </p>
+            <figcaption class="tarjeta inicio__visual-pie">
+              <strong class="inicio__visual-titulo">Tu próxima aventura es aprender.</strong>
+              <span class="texto-secundario">Historia, paisajes y tradiciones que merecen una pregunta más.</span>
+            </figcaption>
+          </figure>
+        </div>
+
+        <!-- Datos rápidos (mockup: directo sobre el coral, con línea divisoria) -->
+        <dl class="datos-rapidos">
+          <div class="dato-rapido"><dt class="visually-hidden">Preguntas por partida</dt><dd>10 preguntas</dd></div>
+          <div class="dato-rapido"><dt class="visually-hidden">Tiempo por pregunta</dt><dd>20 s por pregunta</dd></div>
+          <div class="dato-rapido"><dt class="visually-hidden">Categorías disponibles</dt><dd>6 categorías</dd></div>
+        </dl>
+      </section>
+
+      <!-- ------------------------------------------------------------ 2. INSTRUCCIONES -->
+      <section class="pantalla" data-pantalla="instrucciones" aria-labelledby="titulo-instrucciones" hidden>
+        <header class="cabecera-pantalla">
+          <p class="etiqueta">Antes de comenzar</p>
+          <h1 class="titulo" id="titulo-instrucciones" tabindex="-1">Así se juega</h1>
+          <p class="subtitulo">Un reto corto, muchos descubrimientos. Estas son las reglas.</p>
+        </header>
+
+        <ul class="rejilla rejilla--3 lista-reglas">
+          <li class="tarjeta regla">
+            <span class="regla__icono"><svg class="icono" aria-hidden="true"><use href="#i-lista"></use></svg></span>
+            <h2 class="regla__titulo">10 preguntas por partida</h2>
+            <p>Elige una categoría o juega con Todas para explorar un poco de cada tema.</p>
+          </li>
+          <li class="tarjeta regla">
+            <span class="regla__icono"><svg class="icono" aria-hidden="true"><use href="#i-cursor"></use></svg></span>
+            <h2 class="regla__titulo">4 opciones, una correcta</h2>
+            <p>Selecciona una sola respuesta. Al elegir, verás la solución y su explicación.</p>
+          </li>
+          <li class="tarjeta regla">
+            <span class="regla__icono"><svg class="icono" aria-hidden="true"><use href="#i-cronometro"></use></svg></span>
+            <h2 class="regla__titulo">20 segundos por pregunta</h2>
+            <p>El tiempo se reinicia en cada pregunta, en todas las dificultades. Si se agota, sumas 0 puntos.</p>
+          </li>
+        </ul>
+
+        <div class="rejilla rejilla--2">
+          <section class="tarjeta" aria-labelledby="titulo-puntuacion">
+            <h2 class="tarjeta__titulo" id="titulo-puntuacion">Cada acierto cuenta</h2>
+            <div class="rejilla rejilla--2">
+              <p class="dato-tarjeta dato-tarjeta--acierto">
+                <strong class="dato-tarjeta__valor">+100</strong>
+                <span class="dato-tarjeta__etiqueta">Respuesta correcta</span>
+              </p>
+              <p class="dato-tarjeta">
+                <strong class="dato-tarjeta__valor">0</strong>
+                <span class="dato-tarjeta__etiqueta">Error o sin respuesta</span>
+              </p>
+            </div>
+            <p>Sin bonos de velocidad ni penalizaciones. Tu puntaje máximo es 1.000 puntos: 10 aciertos × 100.</p>
+            <p><strong>Ejemplo: 8 aciertos = 800 puntos = 80 %.</strong></p>
+          </section>
+
+          <section class="tarjeta" aria-labelledby="titulo-comodines">
+            <h2 class="tarjeta__titulo" id="titulo-comodines">Una ayudita extra</h2>
+            <ul class="lista-datos">
+              <li class="dato">
+                <span class="dato__icono"><svg class="icono" aria-hidden="true"><use href="#i-quitar"></use></svg></span>
+                <span><strong>Comodín 50/50</strong><br>Elimina dos opciones incorrectas.</span>
+              </li>
+              <li class="dato">
+                <span class="dato__icono"><svg class="icono" aria-hidden="true"><use href="#i-cronometro"></use></svg></span>
+                <span><strong>+10 segundos</strong><br>Añade 10 segundos al tiempo restante.</span>
+              </li>
+            </ul>
+            <p>Cada comodín se puede usar una vez por partida. Usarlos no resta puntos.</p>
+          </section>
+        </div>
+
+        <div class="acciones acciones--par">
+          <button type="button" class="boton boton--secundario boton--ancho" data-ir="inicio">
+            <svg class="icono" aria-hidden="true"><use href="#i-flecha-izq"></use></svg>
+            Volver
+          </button>
+          <button type="button" id="btn-instrucciones-comenzar" class="boton boton--primario boton--ancho">
+            <svg class="icono" aria-hidden="true"><use href="#i-play"></use></svg>
+            Comenzar
+          </button>
+        </div>
+      </section>
+
+      <!-- ------------------------------------------------- 3. CONFIGURACIÓN DE PARTIDA -->
+      <section class="pantalla" data-pantalla="configuracion-partida" aria-labelledby="titulo-config-partida" hidden>
+        <header class="cabecera-pantalla">
+          <p class="etiqueta">Prepara tu reto</p>
+          <h1 class="titulo" id="titulo-config-partida" tabindex="-1">¿Qué vamos a descubrir?</h1>
+          <p class="subtitulo" id="config-partida-subtitulo">Elige tu tema y el nivel de la partida.</p>
+        </header>
+
+        <div class="composicion composicion--lateral">
+          <div class="composicion__principal">
+            <section class="tarjeta" aria-labelledby="titulo-categoria">
+              <h2 class="tarjeta__titulo" id="titulo-categoria">Categoría</h2>
+              <p class="texto-secundario" id="categoria-ayuda" aria-live="polite"></p>
+              <!-- Tarjetas-opción: se dibujan con ui.js desde CATEGORIAS -->
+              <fieldset class="grupo-opciones">
+                <legend class="visually-hidden">Elige una categoría</legend>
+                <div class="rejilla rejilla--3" id="categorias-lista"></div>
+              </fieldset>
+
+              <h2 class="tarjeta__titulo tarjeta__titulo--segundo" id="titulo-dificultad">Dificultad</h2>
+              <fieldset class="grupo-opciones">
+                <legend class="visually-hidden">Elige la dificultad</legend>
+                <div class="segmentado" id="dificultad-lista"></div>
+              </fieldset>
+              <p class="texto-secundario" id="dificultad-ayuda" aria-live="polite"></p>
+            </section>
           </div>
-        </form>
-        <!-- Pendiente (ui.js): datos rápidos "10 preguntas · 20 s por pregunta · 6 categorías" -->
-      </section>
 
-      <!-- 2. INSTRUCCIONES -->
-      <section id="pantalla-instrucciones" class="pantalla" data-pantalla="instrucciones" aria-labelledby="titulo-instrucciones" hidden>
-        <header class="pantalla__cabecera">
-          <p class="pantalla__etiqueta">Antes de comenzar</p>
-          <h1 id="titulo-instrucciones" class="pantalla__titulo" tabindex="-1">Así se juega</h1>
-          <p class="pantalla__subtitulo">Un reto corto, muchos descubrimientos. Estas son las reglas.</p>
-        </header>
-        <div id="instrucciones-resumen" class="rejilla"></div>      <!-- 10 preguntas · 4 opciones · 20 s -->
-        <div id="instrucciones-puntuacion" class="tarjeta"></div>   <!-- Pendiente: decisión de puntuación (ver README) -->
-        <div id="instrucciones-comodines" class="tarjeta"></div>    <!-- 50/50 y +10 segundos -->
-        <div class="acciones">
-          <button type="button" class="boton boton--secundario" data-ir="inicio">Volver</button>
-          <button type="button" class="boton boton--primario" data-ir="inicio">Comenzar</button>
+          <aside class="composicion__lateral">
+            <section class="tarjeta" aria-labelledby="titulo-mejor-puntaje">
+              <span class="tarjeta__icono"><svg class="icono" aria-hidden="true"><use href="#i-trofeo"></use></svg></span>
+              <h2 class="texto-secundario" id="titulo-mejor-puntaje">Tu mejor puntaje</h2>
+              <p class="cifra" id="mejor-puntaje-valor">0 pts</p>
+              <p class="chip" id="mejor-puntaje-combinacion"></p>
+            </section>
+
+            <section class="tarjeta" aria-labelledby="titulo-resumen-partida">
+              <h2 class="tarjeta__titulo" id="titulo-resumen-partida">Tu partida</h2>
+              <p id="resumen-categoria"></p>
+              <p id="resumen-dificultad"></p>
+              <p class="texto-secundario">10 preguntas · Hasta 1.000 pts</p>
+              <button type="button" id="btn-comenzar-partida" class="boton boton--primario boton--ancho">
+                <svg class="icono" aria-hidden="true"><use href="#i-play"></use></svg>
+                Comenzar
+              </button>
+              <p class="nota">Los comodines están incluidos.</p>
+            </section>
+          </aside>
         </div>
       </section>
 
-      <!-- 3. CONFIGURACIÓN DE PARTIDA -->
-      <section id="pantalla-configuracion-partida" class="pantalla" data-pantalla="configuracion-partida" aria-labelledby="titulo-configuracion-partida" hidden>
-        <header class="pantalla__cabecera">
-          <p class="pantalla__etiqueta">Prepara tu reto</p>
-          <h1 id="titulo-configuracion-partida" class="pantalla__titulo" tabindex="-1">¿Qué vamos a descubrir?</h1>
-          <p id="config-jugador" class="pantalla__subtitulo"></p>
-        </header>
-        <fieldset class="tarjeta grupo-opciones">
-          <legend>Categoría</legend>
-          <div id="categorias-lista" class="rejilla"></div>         <!-- Renderiza ui.js desde CATEGORIAS -->
-        </fieldset>
-        <fieldset class="tarjeta grupo-opciones">
-          <legend>Dificultad</legend>
-          <div id="dificultad-lista" class="rejilla"></div>         <!-- Renderiza ui.js desde DIFICULTADES -->
-        </fieldset>
-        <aside id="mejor-puntaje" class="tarjeta" aria-label="Mejor puntaje en esta combinación"></aside>
-        <div class="acciones">
-          <button type="button" id="btn-comenzar" class="boton boton--primario">Comenzar partida</button>
-        </div>
-      </section>
-
-      <!-- 4. JUEGO -->
-      <section id="pantalla-juego" class="pantalla" data-pantalla="juego" aria-labelledby="titulo-juego" hidden>
-        <header class="pantalla__cabecera">
-          <p class="pantalla__etiqueta">Partida en curso</p>
-          <h1 id="titulo-juego" class="pantalla__titulo" tabindex="-1">Partida en curso</h1>
-          <p id="juego-contexto" class="pantalla__subtitulo"></p>
-        </header>
-        <div class="marcadores">
-          <div id="juego-puntaje"></div>
-          <div id="juego-temporizador" role="timer" aria-live="off"></div>
-        </div>
-        <article class="tarjeta pregunta">
-          <div id="juego-progreso"></div>                            <!-- barra "Pregunta n de 10" -->
-          <h2 id="juego-enunciado" class="pregunta__enunciado"></h2>
-          <div id="juego-opciones" class="opciones"></div>           <!-- 4 botones de respuesta -->
-        </article>
-        <aside class="tarjeta" aria-label="Comodines">
-          <h2 class="tarjeta__titulo">Tus comodines</h2>
-          <div class="acciones">
-            <button type="button" id="btn-comodin-5050" class="boton boton--primario">50/50</button>
-            <button type="button" id="btn-comodin-tiempo" class="boton boton--primario">+10 segundos</button>
+      <!-- ------------------------------------------------------------------- 4. JUEGO -->
+      <section class="pantalla" data-pantalla="juego" aria-labelledby="titulo-juego" hidden>
+        <header class="cabecera-pantalla cabecera-pantalla--marcadores">
+          <div class="cabecera-pantalla__textos">
+            <p class="etiqueta">Partida en curso</p>
+            <h1 class="titulo" id="titulo-juego" tabindex="-1">¡Vamos!</h1>
+            <p class="subtitulo" id="juego-contexto"></p>
           </div>
-        </aside>
-        <div class="acciones">
-          <button type="button" id="btn-salir-partida" class="boton boton--secundario">Salir</button>
+          <div class="marcadores">
+            <p class="marcador">
+              <svg class="icono" aria-hidden="true"><use href="#i-estrella"></use></svg>
+              <strong class="marcador__valor" id="juego-puntaje">0</strong>
+              <span class="marcador__etiqueta">Puntos</span>
+            </p>
+            <p class="marcador">
+              <svg class="icono" aria-hidden="true"><use href="#i-cronometro"></use></svg>
+              <strong class="marcador__valor" id="juego-tiempo" role="timer" aria-live="off">20 s</strong>
+              <span class="marcador__etiqueta">Tiempo restante</span>
+            </p>
+          </div>
+        </header>
+
+        <div class="composicion composicion--lateral">
+          <article class="tarjeta tarjeta--pregunta" id="juego-tarjeta">
+            <!-- Estado vacío: se sustituye por la pregunta cuando exista el banco (etapa 3) -->
+            <div class="estado-vacio" id="juego-estado-vacio">
+              <svg class="icono icono--grande" aria-hidden="true"><use href="#i-info"></use></svg>
+              <h2 class="estado-vacio__titulo">Las preguntas se cargan en la etapa 3</h2>
+              <p class="estado-vacio__texto">El banco de preguntas todavía no está incluido. Ya está
+                preparado el área donde se mostrará el enunciado, las cuatro opciones, el progreso
+                y el temporizador.</p>
+              <div class="acciones acciones--centrado">
+                <button type="button" class="boton boton--secundario" data-ir="configuracion-partida">Volver a configurar</button>
+              </div>
+            </div>
+
+            <!-- Esqueleto de la pregunta (lo rellena ui.js.mostrarPregunta) -->
+            <div id="juego-pregunta" hidden>
+              <div class="fila-superior">
+                <span class="chip">
+                  <svg class="icono" aria-hidden="true"><use href="#i-montana"></use></svg>
+                  <span id="juego-categoria"></span>
+                </span>
+                <span class="progreso__texto" id="juego-progreso-texto"></span>
+              </div>
+              <div class="progreso" id="juego-progreso" role="img" aria-label="Progreso de la partida"></div>
+              <h2 class="enunciado" id="juego-enunciado"></h2>
+              <p class="texto-secundario" id="juego-instruccion">Selecciona una respuesta antes de que termine el tiempo.</p>
+              <div class="opciones" id="juego-opciones" role="group" aria-labelledby="juego-enunciado"></div>
+            </div>
+          </article>
+
+          <aside class="composicion__lateral">
+            <section class="tarjeta" aria-labelledby="titulo-tus-comodines">
+              <h2 class="tarjeta__titulo" id="titulo-tus-comodines">Tus comodines</h2>
+              <p class="texto-secundario">Una ayuda de cada tipo, sin perder puntos.</p>
+              <button type="button" id="btn-comodin-5050" class="boton boton--primario boton--ancho" disabled>
+                <svg class="icono" aria-hidden="true"><use href="#i-quitar"></use></svg>
+                50/50
+              </button>
+              <p class="nota" id="nota-comodin-5050">1 disponible · Quita 2 opciones</p>
+              <button type="button" id="btn-comodin-tiempo" class="boton boton--primario boton--ancho" disabled>
+                <svg class="icono" aria-hidden="true"><use href="#i-cronometro"></use></svg>
+                +10 segundos
+              </button>
+              <p class="nota" id="nota-comodin-tiempo">1 disponible · Tiempo extra</p>
+            </section>
+
+            <button type="button" id="btn-salir-partida" class="boton boton--secundario boton--ancho boton--salida">
+              <svg class="icono" aria-hidden="true"><use href="#i-salir"></use></svg>
+              Salir
+            </button>
+            <p class="nota nota--alerta">Si sales, esta partida no se guardará.</p>
+          </aside>
         </div>
       </section>
 
-      <!-- 5. RETROALIMENTACIÓN -->
-      <section id="pantalla-retroalimentacion" class="pantalla" data-pantalla="retroalimentacion" aria-labelledby="titulo-retroalimentacion" hidden>
-        <header class="pantalla__cabecera">
-          <p id="feedback-contexto" class="pantalla__etiqueta"></p>
-          <h1 id="titulo-retroalimentacion" class="pantalla__titulo" tabindex="-1">Cada pregunta enseña algo</h1>
+      <!-- ------------------------------------------------------- 5. RETROALIMENTACIÓN -->
+      <section class="pantalla" data-pantalla="retroalimentacion" aria-labelledby="titulo-retro" hidden>
+        <header class="cabecera-pantalla">
+          <p class="etiqueta" id="retro-contexto">Pregunta respondida</p>
+          <h1 class="titulo" id="titulo-retro" tabindex="-1">Cada pregunta enseña algo</h1>
+          <p class="subtitulo">Revisa tu elección y descubre la respuesta correcta.</p>
         </header>
-        <div id="feedback-estado" role="status"></div>               <!-- ¡Correcto! / Incorrecta + puntos -->
-        <article class="tarjeta pregunta">
-          <h2 id="feedback-enunciado" class="pregunta__enunciado"></h2>
-          <div id="feedback-opciones" class="opciones"></div>        <!-- correcta en verde, incorrecta en rojo -->
-        </article>
-        <section id="feedback-explicacion" class="tarjeta" aria-label="Explicación"></section>
-        <div class="acciones">
-          <button type="button" id="btn-siguiente" class="boton boton--primario">Siguiente pregunta</button>
+
+        <div class="composicion composicion--lateral">
+          <article class="tarjeta tarjeta--pregunta" id="retro-tarjeta">
+            <div class="estado-vacio" id="retro-estado-vacio">
+              <svg class="icono icono--grande" aria-hidden="true"><use href="#i-info"></use></svg>
+              <h2 class="estado-vacio__titulo">La retroalimentación aparece al responder</h2>
+              <p class="estado-vacio__texto">Aquí se mostrarán tu elección, la opción correcta y la
+                explicación de la pregunta, con la barra de progreso de la partida.</p>
+              <div class="acciones acciones--centrado">
+                <button type="button" class="boton boton--secundario" data-ir="inicio">Ir al inicio</button>
+              </div>
+            </div>
+
+            <!-- Esqueleto (lo rellena ui.js.mostrarRetroalimentacion) -->
+            <div id="retro-pregunta" hidden>
+              <div class="fila-superior">
+                <span class="chip">
+                  <svg class="icono" aria-hidden="true"><use href="#i-montana"></use></svg>
+                  <span id="retro-categoria"></span>
+                </span>
+                <span class="chip" id="retro-dificultad"></span>
+              </div>
+              <div class="progreso" id="retro-progreso" role="img" aria-label="Progreso de la partida"></div>
+              <h2 class="enunciado" id="retro-enunciado"></h2>
+              <div class="opciones opciones--columna" id="retro-opciones" aria-live="polite"></div>
+            </div>
+          </article>
+
+          <aside class="composicion__lateral">
+            <section class="tarjeta retro-tarjeta" id="retro-estado" role="status" hidden></section>
+            <section class="tarjeta retro-tarjeta" id="retro-explicacion" aria-label="Respuesta correcta" hidden></section>
+            <section class="tarjeta" id="retro-avance" hidden>
+              <h2 class="tarjeta__titulo" id="retro-acumulado"></h2>
+              <p class="texto-secundario" id="retro-detalle"></p>
+              <button type="button" id="btn-siguiente" class="boton boton--primario boton--ancho">
+                <svg class="icono" aria-hidden="true"><use href="#i-flecha-der"></use></svg>
+                <span id="btn-siguiente-texto">Siguiente pregunta</span>
+              </button>
+            </section>
+          </aside>
         </div>
       </section>
 
-      <!-- 6. RESULTADO -->
-      <section id="pantalla-resultado" class="pantalla" data-pantalla="resultado" aria-labelledby="titulo-resultado" hidden>
-        <header class="pantalla__cabecera">
-          <p class="pantalla__etiqueta">Partida completada</p>
-          <h1 id="titulo-resultado" class="pantalla__titulo" tabindex="-1">Partida completada</h1>
-          <p id="resultado-mensaje" class="pantalla__subtitulo"></p>
+      <!-- --------------------------------------------------------------- 6. RESULTADO -->
+      <section class="pantalla" data-pantalla="resultado" aria-labelledby="titulo-resultado" hidden>
+        <header class="cabecera-pantalla">
+          <p class="etiqueta">Partida completada</p>
+          <h1 class="titulo" id="titulo-resultado" tabindex="-1">Partida completada</h1>
+          <p class="subtitulo" id="resultado-mensaje">Revisa el resumen de tu partida.</p>
         </header>
-        <div id="resultado-resumen" class="rejilla"></div>           <!-- puntaje, aciertos, %, tiempo total -->
-        <div id="resultado-posicion" class="tarjeta"></div>          <!-- puesto en el ranking / mejor marca -->
-        <div id="resultado-falladas" class="tarjeta"></div>          <!-- revisión de preguntas falladas -->
-        <div class="acciones">
-          <button type="button" id="btn-jugar-de-nuevo" class="boton boton--primario">Jugar de nuevo</button>
-          <button type="button" class="boton boton--secundario" data-ir="ranking">Ver ranking</button>
-          <button type="button" class="boton boton--secundario" data-ir="inicio">Inicio</button>
+
+        <div class="estado-vacio" id="resultado-estado-vacio">
+          <svg class="icono icono--grande" aria-hidden="true"><use href="#i-info"></use></svg>
+          <h2 class="estado-vacio__titulo">Aún no hay una partida que resumir</h2>
+          <p class="estado-vacio__texto">Cuando termines una partida, aquí verás tu puntaje, tus
+            aciertos, el tiempo total, tu recorrido y tu puesto en el ranking.</p>
+          <div class="acciones acciones--centrado">
+            <button type="button" class="boton boton--primario" data-ir="configuracion-partida">Configurar una partida</button>
+          </div>
+        </div>
+
+        <!-- Contenido (lo rellena ui.js.mostrarResultado) -->
+        <div id="resultado-contenido" hidden>
+          <div class="composicion composicion--lateral">
+            <section class="tarjeta tarjeta--puntaje" aria-labelledby="titulo-puntaje">
+              <span class="puntaje__icono"><svg class="icono" aria-hidden="true"><use href="#i-trofeo"></use></svg></span>
+              <p class="etiqueta" id="titulo-puntaje">Tu puntaje</p>
+              <p class="puntaje__valor" id="resultado-puntaje">0</p>
+              <p class="texto-secundario" id="resultado-maximo">de 1.000 puntos posibles</p>
+              <p class="chip" id="resultado-combinacion"></p>
+              <div class="rejilla rejilla--3" id="resultado-resumen"></div>
+              <section aria-labelledby="titulo-recorrido">
+                <h2 class="texto-secundario texto-secundario--fuerte" id="titulo-recorrido">Tu recorrido</h2>
+                <ol class="recorrido" id="resultado-recorrido"></ol>
+                <p class="nota" id="resultado-desglose"></p>
+              </section>
+            </section>
+
+            <aside class="composicion__lateral">
+              <section class="tarjeta">
+                <span class="tarjeta__icono"><svg class="icono" aria-hidden="true"><use href="#i-destello"></use></svg></span>
+                <h2 class="tarjeta__titulo">¡Tu curiosidad te lleva lejos!</h2>
+                <p id="resultado-mensaje-lateral"></p>
+              </section>
+              <section class="tarjeta">
+                <p class="chip chip--acierto">
+                  <svg class="icono" aria-hidden="true"><use href="#i-circulo-check"></use></svg>
+                  Partida guardada
+                </p>
+                <h2 class="tarjeta__titulo" id="resultado-puesto"></h2>
+                <p class="texto-secundario" id="resultado-fecha"></p>
+                <p class="texto-secundario" id="resultado-record"></p>
+              </section>
+            </aside>
+          </div>
+        </div>
+
+        <div class="acciones rejilla--acciones">
+          <button type="button" id="btn-jugar-de-nuevo" class="boton boton--primario boton--ancho">
+            <svg class="icono" aria-hidden="true"><use href="#i-reiniciar"></use></svg>
+            Jugar de nuevo
+          </button>
+          <button type="button" class="boton boton--secundario boton--ancho" data-ir="ranking">
+            <svg class="icono" aria-hidden="true"><use href="#i-trofeo"></use></svg>
+            Ranking
+          </button>
+          <button type="button" class="boton boton--secundario boton--ancho" data-ir="inicio">
+            <svg class="icono" aria-hidden="true"><use href="#i-casa"></use></svg>
+            Inicio
+          </button>
         </div>
       </section>
 
-      <!-- 7. RANKING Y ESTADÍSTICAS -->
-      <section id="pantalla-ranking" class="pantalla" data-pantalla="ranking" aria-labelledby="titulo-ranking" hidden>
-        <header class="pantalla__cabecera">
-          <p class="pantalla__etiqueta">La curiosidad tiene su podio</p>
-          <h1 id="titulo-ranking" class="pantalla__titulo" tabindex="-1">Ranking Colombia</h1>
-          <p class="pantalla__subtitulo">Los 10 mejores resultados guardados en este dispositivo.</p>
+      <!-- ------------------------------------------- 7. RANKING Y ESTADÍSTICAS -->
+      <section class="pantalla" data-pantalla="ranking" aria-labelledby="titulo-ranking" hidden>
+        <header class="cabecera-pantalla">
+          <p class="etiqueta">La curiosidad tiene su podio</p>
+          <h1 class="titulo" id="titulo-ranking" tabindex="-1">Ranking Colombia</h1>
+          <p class="subtitulo">Las 10 partidas locales más recientes, ordenadas por puntaje.</p>
         </header>
-        <div id="ranking-estadisticas" class="rejilla"></div>        <!-- partidas, % aciertos, mejor puntaje, mejor categoría -->
-        <div id="ranking-tabla" class="tarjeta"></div>              <!-- tabla top 10 (tarjetas en móvil) -->
-        <div class="acciones">
-          <button type="button" class="boton boton--secundario" data-ir="inicio">Volver</button>
-          <button type="button" id="btn-borrar-ranking" class="boton boton--secundario">Borrar ranking</button>
+
+        <section aria-labelledby="titulo-recorrido-jugador">
+          <h2 class="texto-secundario texto-secundario--fuerte" id="titulo-recorrido-jugador">Tu recorrido</h2>
+          <!-- Estadísticas del jugador (ui.js.renderRanking) -->
+          <div class="rejilla rejilla--4" id="ranking-estadisticas"></div>
+        </section>
+
+        <section class="tarjeta" aria-labelledby="titulo-mentes">
+          <div class="fila-superior">
+            <h2 class="tarjeta__titulo" id="titulo-mentes">Mentes que brillan</h2>
+            <p class="texto-secundario" id="ranking-actualizacion"></p>
+          </div>
+          <!-- Tabla top 10 (ui.js.renderRanking); en móvil se adapta a tarjetas -->
+          <div id="ranking-tabla"></div>
+          <p class="nota">En caso de empate, la partida más antigua aparece primero. Los datos se
+            guardan en este dispositivo.</p>
+        </section>
+
+        <div class="acciones acciones--par">
+          <button type="button" class="boton boton--secundario boton--ancho" data-ir="inicio">
+            <svg class="icono" aria-hidden="true"><use href="#i-flecha-izq"></use></svg>
+            Volver
+          </button>
+          <button type="button" id="btn-borrar-ranking" class="boton boton--peligro boton--ancho">
+            <svg class="icono" aria-hidden="true"><use href="#i-basura"></use></svg>
+            Borrar ranking
+          </button>
         </div>
+        <p class="nota nota--centrado">Borrar el ranking también elimina tus estadísticas locales.</p>
       </section>
 
-      <!-- 8. CONFIGURACIÓN GENERAL -->
-      <section id="pantalla-configuracion" class="pantalla" data-pantalla="configuracion" aria-labelledby="titulo-configuracion" hidden>
-        <header class="pantalla__cabecera">
-          <p class="pantalla__etiqueta">A tu manera</p>
-          <h1 id="titulo-configuracion" class="pantalla__titulo" tabindex="-1">Configuración</h1>
-          <p class="pantalla__subtitulo">Pequeños ajustes para disfrutar cada descubrimiento.</p>
+      <!-- -------------------------------------------------- 8. CONFIGURACIÓN GENERAL -->
+      <section class="pantalla" data-pantalla="configuracion" aria-labelledby="titulo-config" hidden>
+        <header class="cabecera-pantalla">
+          <p class="etiqueta">A tu manera</p>
+          <h1 class="titulo" id="titulo-config" tabindex="-1">Configuración</h1>
+          <p class="subtitulo">Pequeños ajustes para disfrutar cada descubrimiento.</p>
         </header>
-        <div class="tarjeta">
-          <h2 class="tarjeta__titulo">Sonido</h2>
-          <label class="interruptor">
-            <input type="checkbox" id="pref-sonido" role="switch" checked>
-            <span>Efectos al responder y al completar una partida</span>
-          </label>
-        </div>
-        <fieldset class="tarjeta grupo-opciones">
-          <legend>Tema</legend>
-          <label><input type="radio" name="pref-tema" value="claro" checked> Claro</label>
-          <label><input type="radio" name="pref-tema" value="oscuro"> Oscuro</label>
-        </fieldset>
-        <div class="acciones">
-          <button type="button" class="boton boton--secundario" data-ir="inicio">Inicio</button>
+
+        <div class="composicion composicion--lateral">
+          <div class="composicion__principal">
+            <section class="tarjeta" aria-labelledby="titulo-sonido">
+              <h2 class="tarjeta__titulo tarjeta__titulo--icono" id="titulo-sonido">
+                <svg class="icono" aria-hidden="true"><use href="#i-altavoz"></use></svg>
+                Sonido
+              </h2>
+              <p>Escucha los efectos al responder y al completar una partida.</p>
+              <div class="interruptor-fila">
+                <span>
+                  <strong id="sonido-estado">Activado</strong><br>
+                  <span class="texto-secundario">Efectos del juego</span>
+                </span>
+                <label class="interruptor">
+                  <input type="checkbox" id="pref-sonido" role="switch" checked>
+                  <span class="interruptor__pista" aria-hidden="true"></span>
+                  <span class="visually-hidden">Activar o desactivar los efectos de sonido</span>
+                </label>
+              </div>
+            </section>
+
+            <section class="tarjeta" aria-labelledby="titulo-tema">
+              <h2 class="tarjeta__titulo tarjeta__titulo--icono" id="titulo-tema">
+                <svg class="icono" aria-hidden="true"><use href="#i-paleta"></use></svg>
+                Tema
+              </h2>
+              <p>Elige la apariencia que te resulte más cómoda.</p>
+              <fieldset class="grupo-opciones">
+                <legend class="visually-hidden">Tema de la aplicación</legend>
+                <div class="rejilla rejilla--2" id="tema-lista">
+                  <label class="tarjeta-opcion" for="tema-claro">
+                    <input type="radio" name="pref-tema" id="tema-claro" value="claro" checked>
+                    <span class="vista-tema vista-tema--claro" aria-hidden="true">
+                      <span class="vista-tema__barra"></span>
+                      <span class="vista-tema__tarjeta"></span>
+                    </span>
+                    <span class="tarjeta-opcion__cuerpo">
+                      <span class="tarjeta-opcion__nombre">
+                        <svg class="icono" aria-hidden="true"><use href="#i-sol"></use></svg>
+                        Claro
+                      </span>
+                      <span class="tarjeta-opcion__marca" aria-hidden="true">
+                        <svg class="icono"><use href="#i-circulo-check"></use></svg>
+                      </span>
+                    </span>
+                    <span class="texto-secundario" data-estado-tema>Seleccionado</span>
+                  </label>
+
+                  <label class="tarjeta-opcion" for="tema-oscuro">
+                    <input type="radio" name="pref-tema" id="tema-oscuro" value="oscuro">
+                    <span class="vista-tema vista-tema--oscuro" aria-hidden="true">
+                      <span class="vista-tema__barra"></span>
+                      <span class="vista-tema__tarjeta"></span>
+                    </span>
+                    <span class="tarjeta-opcion__cuerpo">
+                      <span class="tarjeta-opcion__nombre">
+                        <svg class="icono" aria-hidden="true"><use href="#i-luna"></use></svg>
+                        Oscuro
+                      </span>
+                      <span class="tarjeta-opcion__marca" aria-hidden="true">
+                        <svg class="icono"><use href="#i-circulo-check"></use></svg>
+                      </span>
+                    </span>
+                    <span class="texto-secundario" data-estado-tema>No seleccionado</span>
+                  </label>
+                </div>
+              </fieldset>
+            </section>
+          </div>
+
+          <aside class="composicion__lateral">
+            <section class="tarjeta" aria-labelledby="titulo-espacio">
+              <h2 class="tarjeta__titulo" id="titulo-espacio">Tu espacio de juego</h2>
+              <div class="panel-coral">
+                <p class="panel-coral__marca">Trivia Colombia</p>
+                <div class="tarjeta tarjeta--anidada">
+                  <span class="tarjeta__icono"><svg class="icono" aria-hidden="true"><use href="#i-destello"></use></svg></span>
+                  <h3 class="tarjeta__titulo">Un país por descubrir</h3>
+                  <p class="texto-secundario">Tu próxima pregunta te espera.</p>
+                </div>
+                <button type="button" class="boton boton--primario boton--ancho" data-ir="jugar">
+                  <svg class="icono" aria-hidden="true"><use href="#i-play"></use></svg>
+                  Jugar
+                </button>
+              </div>
+              <p class="chip chip--acierto">
+                <svg class="icono" aria-hidden="true"><use href="#i-circulo-check"></use></svg>
+                Preferencias guardadas
+              </p>
+              <p class="texto-secundario" id="preferencias-resumen">Los ajustes se conservan en este dispositivo.</p>
+            </section>
+
+            <button type="button" class="boton boton--primario boton--ancho" data-ir="inicio">
+              <svg class="icono" aria-hidden="true"><use href="#i-casa"></use></svg>
+              Inicio
+            </button>
+          </aside>
         </div>
       </section>
 
     </main>
 
-    <!-- PIE (componente persistente) -->
-    <footer class="app-footer">
-      <div class="app-footer__interior contenedor">
-        <p>Aprender también es jugar · Hecho con curiosidad por Colombia</p>
+    <!-- ==========================================================================
+         PIE — componente persistente
+         ======================================================================= -->
+    <footer class="pie">
+      <div class="pie__interior contenedor">
+        <p>Aprender también es jugar. &nbsp;•&nbsp; Hecho con curiosidad por Colombia.</p>
         <p>Trivia Colombia · 2026</p>
       </div>
     </footer>
 
     <!-- Mensajes accesibles (aciertos, errores, validaciones) -->
-    <div id="mensajes" class="mensajes" aria-live="polite"></div>
+    <div id="mensajes" class="mensajes" aria-live="polite" aria-atomic="true"></div>
   </div>
 
-  <noscript>Trivia Colombia necesita JavaScript activado para funcionar.</noscript>
+  <noscript>
+    <p class="aviso-noscript">Trivia Colombia necesita JavaScript activado para funcionar.</p>
+  </noscript>
 
   <!-- Scripts clásicos con defer. El orden es el de dependencias:
        datos → almacenamiento → lógica → interfaz → punto de entrada -->
