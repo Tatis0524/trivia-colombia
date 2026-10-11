@@ -46,7 +46,7 @@ trivia-colombia/
 ├── assets/
 │   ├── img/                Logo e íconos de categorías
 │   └── sonidos/            Efectos de acierto y error
-├── tests/                  Pruebas de Node (banco, motor y recorrido E2E en navegador)
+├── tests/                  Pruebas de Node (banco, motor, persistencia y recorrido E2E en navegador)
 ├── docs/diseno/            Exportaciones (PDF/PNG) del diseño de Figma
 └── README.md
 ```
@@ -54,7 +54,7 @@ trivia-colombia/
 | Archivo | Hace | No hace |
 |---|---|---|
 | `preguntas.js` | Define `CATEGORIAS`, `DIFICULTADES` y `PREGUNTAS` | Filtrar, mezclar o validar |
-| `almacenamiento.js` | Lee/escribe `trivia_ranking`, `trivia_stats` y preferencias | Calcular puntajes o tocar el DOM |
+| `almacenamiento.js` | Lee/escribe (validando y deduplicando) `trivia_ranking`, `trivia_stats` y preferencias | Calcular puntajes o tocar el DOM |
 | `juego.js` | Reglas, estado, temporizador, puntaje, comodines | Tocar el DOM o localStorage |
 | `ui.js` | Pintar pregunta, opciones, resultado, ranking, mensajes | Decidir la pantalla o calcular el juego |
 | `app.js` | `irA(pantalla)`, eventos, orden de arranque | Reglas del juego o dibujo dinámico |
@@ -129,7 +129,7 @@ Orden de carga de los scripts (por dependencias): `preguntas` → `almacenamient
 - [x] Etapa 1 — Estructura inicial.
 - [x] Etapa 2 — Maquetación HTML/CSS de las 8 pantallas (este commit).
 - [x] Etapa 3 — Banco de 150 preguntas y motor del juego (`js/juego.js`) conectado a `ui.js`.
-- [ ] Etapa 4 — Sonidos, tema oscuro y revisión de preguntas falladas (los comodines, el ranking y las estadísticas ya están implementados y probados en la etapa 3).
+- [x] Etapa 4 — Persistencia completa (`js/almacenamiento.js`: validación, deduplicado, estadísticas y preferencias, con pruebas). Quedan de la etapa 4: sonidos, tema oscuro y revisión de preguntas falladas.
 - [ ] Etapa 5 — Pruebas, ajustes frente al diseño, despliegue en Vercel y video.
 
 ## Verificación de la maquetación (etapa 2)
@@ -158,15 +158,35 @@ Partida completa probada de principio a fin con `node tests/e2e-navegador.js` (8
 
 No se hallaron fallos de integración entre `app.js`, `juego.js`, `ui.js` e `index.html`: los ids referenciados existen, los scripts cargan en el orden correcto (con `defer`) y las clases de estado (`opcion--correcta/incorrecta/fuera`, `retro-tarjeta--*`, `progreso__segmento--*`) están definidas. El puntaje final del recorrido coincide con el cálculo manual según el Word §6.1: 185 + 200 + 200 + 200 + 250 (el último con +50 de racha al tercer acierto seguido) − 60 de comodines = **975 pts**, idéntico al mostrado por la interfaz y guardado en el ranking.
 
+## Persistencia local (etapa 4)
+
+`js/almacenamiento.js` guarda en `localStorage` (sin servidor ni base de datos externa) el ranking (`trivia_ranking`), las estadísticas (`trivia_stats`) y las preferencias (`trivia_preferencias`). Garantías:
+
+- **Solo partidas terminadas:** `guardarEnRanking` valida los cinco campos (nombre, puntaje, categoría, dificultad y fecha); un registro incompleto o inválido se rechaza (`null`) y no modifica lo ya guardado. Además, en la app, `Juego.finalizarPartida()` devuelve `null` hasta que se responden las 10 preguntas, así que una partida cancelada nunca se guarda (probado en el E2E, paso 15).
+- **Sin duplicados:** la misma partida —idéntica en los cinco campos— no se escribe dos veces: repetir el guardado (doble clic, recarga, cambio de pantalla) devuelve la posición existente sin duplicar filas. `actualizarEstadisticas` deduplica por `fecha`, así que el contador de partidas no se infla.
+- **Datos saneados al leer:** entradas corruptas, incompletas o duplicadas se descartan, los textos se normalizan y el orden es consistente (puntaje ↓, fecha ↑, nombre ↑). El ranking nunca supera las 10 posiciones (RF-13) y leer nunca escribe.
+- **Errores de acceso:** cada lectura/escritura va en `try/catch`; con el almacenamiento bloqueado (modo privado) o con JSON inválido devuelve listas vacías, estadísticas en cero y preferencias por defecto, sin lanzar excepciones.
+- **Preferencias:** `sonido` y `tema` se normalizan al leer y al escribir, solo se exponen esas dos claves y sobreviven a la recarga. `guardarPreferencias` combina con lo guardado (acepta actualizar un solo campo sin perder el otro).
+- **Borrado:** `borrarRanking()` elimina `trivia_ranking` y `trivia_stats` (el mockup advierte que también borra las estadísticas) y conserva las preferencias. La confirmación (`window.confirm`) vive en `App.borrarRanking()`, en la capa de interfaz.
+- **Estadísticas:** partidas jugadas, aciertos/total con porcentaje, récord personal (`mejorPuntaje`) y categoría con mejor desempeño, que es lo que `ui.js` pinta en la pantalla de Ranking. El mejor puntaje por categoría y dificultad de la configuración consulta `mejoresCombinaciones`, que no depende del top 10: sigue respondiendo correctamente aunque la partida que sumó ese puntaje ya no esté entre las 10 mejores (con respaldo al ranking para datos antiguos).
+
+**Cambios coordinados con app.js / ui.js / juego.js** (para las integrantes):
+
+- `actualizarEstadisticas(partida)` acepta además de `aciertos`, `totalPreguntas`, `puntaje` y `categoria` los campos `dificultad`, `jugador` y `fecha` (opcionales y retrocompatibles). `app.js` ahora los pasa: `fecha` deduplica dobles guardados y `jugador` + `dificultad` alimentan `mejoresCombinaciones`.
+- `obtenerEstadisticas()` devuelve además dos campos calculados que **no** se persisten: `porcentaje` (redondeo entero) y `mejorCategoria` (id de la categoría; el nombre visible lo resuelve `ui.js` con `UI.categoria`). `ui.js` puede seguir calculándolos a partir de `aciertos`, `totalPreguntas` y `mejoresPuntajes` con fórmulas idénticas: no hubo que tocarlo.
+- `guardarEnRanking(partida)` ahora devuelve `null` cuando el registro es inválido (antes guardaba lo que llegara). La firma y el significado de `null` en `app.js` ("no entró al top 10 o no se pudo guardar") no cambian.
+- No cambió ninguna firma de `juego.js` ni `ui.js`, y el formato de cada resultado guardado sigue siendo el del enunciado: nombre del jugador, puntaje, categoría, dificultad y fecha. No se guarda nada remoto ni datos personales adicionales.
+
 ## Pruebas
 
 ```bash
 node tests/validar-preguntas.js    # banco: 150 preguntas, 30 por categoría, 10 por categoría × dificultad, ids únicos…
-node tests/motor-juego.test.js     # motor: puntaje, selección, temporizador (reloj falso), bloqueo de respuestas
+node tests/motor-juego.test.js     # motor: puntaje, selección, temporizador (reloj falso), bloqueo de respuestas (58 pruebas)
+node tests/almacenamiento.test.js  # persistencia: guardar/leer, orden y top 10, duplicados, borrar, estadísticas y preferencias (34 pruebas)
 node tests/e2e-navegador.js        # recorrido completo: genera __e2e.html, lo sirve y lo juega en Chrome headless (80 comprobaciones)
 ```
 
-Las tres terminan con código de salida `0` cuando todo pasa. El E2E no necesita servidor aparte ni dependencias: usa el Chrome (o Edge) instalado, con tiempo virtual para que los 20 s de cada pregunta duren milisegundos reales. Si el navegador está en otra ruta, se indica con `CHROME_PATH="C:\ruta\chrome.exe" node tests/e2e-navegador.js`. Con `--captura=docs/capturas/resultado-final.png` hace una segunda pasada que se detiene en la pantalla de Resultado y guarda la captura.
+Los cuatro terminan con código de salida `0` cuando todo pasa. El E2E no necesita servidor aparte ni dependencias: usa el Chrome (o Edge) instalado, con tiempo virtual para que los 20 s de cada pregunta duren milisegundos reales. Si el navegador está en otra ruta, se indica con `CHROME_PATH="C:\ruta\chrome.exe" node tests/e2e-navegador.js`. Con `--captura=docs/capturas/resultado-final.png` hace una segunda pasada que se detiene en la pantalla de Resultado y guarda la captura.
 
 ## Pendientes
 

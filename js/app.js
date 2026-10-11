@@ -305,7 +305,10 @@ const App = {
       aciertos: resumen.aciertos,
       totalPreguntas: resumen.total,
       puntaje: resumen.puntaje,
-      categoria: resumen.categoria
+      categoria: resumen.categoria,
+      dificultad: resumen.dificultad,   // mejor puntaje por combinación
+      jugador: resumen.jugador,         // mejor puntaje por jugador
+      fecha: resumen.fecha              // deduplica si finalizar se llama dos veces
     });
 
     this.ultimoResultado = Object.assign({}, resumen, {
