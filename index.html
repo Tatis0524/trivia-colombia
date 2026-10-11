@@ -118,10 +118,10 @@
                   <svg class="icono campo__icono" aria-hidden="true"><use href="#i-persona"></use></svg>
                   <input class="campo__input" id="nombre-jugador" name="nombre" type="text"
                          minlength="2" maxlength="20" autocomplete="off" spellcheck="false"
-                         aria-describedby="nombre-ayuda nombre-error">
+                         aria-describedby="nombre-ayuda nombre-jugador-error">
                 </div>
                 <p class="campo__ayuda" id="nombre-ayuda">Este nombre aparecerá en el ranking.</p>
-                <p class="campo__error" id="nombre-error" role="alert" hidden></p>
+                <p class="campo__error" id="nombre-jugador-error" role="alert" hidden></p>
               </div>
             </form>
 
@@ -209,8 +209,8 @@
                 <span class="dato-tarjeta__etiqueta">Error o sin respuesta</span>
               </p>
             </div>
-            <p>Sin bonos de velocidad ni penalizaciones. Tu puntaje máximo es 1.000 puntos: 10 aciertos × 100.</p>
-            <p><strong>Ejemplo: 8 aciertos = 800 puntos = 80 %.</strong></p>
+            <p>Cada segundo que te sobre suma +5 (hasta +100) y cada 3 aciertos seguidos suman +50. Al final, la dificultad multiplica los puntos: Fácil ×1, Medio ×1,5 y Difícil ×2.</p>
+            <p><strong>Ejemplo: aciertas con 12 s restantes en Fácil = 100 + 60 = 160 puntos.</strong></p>
           </section>
 
           <section class="tarjeta" aria-labelledby="titulo-comodines">
@@ -225,7 +225,7 @@
                 <span><strong>+10 segundos</strong><br>Añade 10 segundos al tiempo restante.</span>
               </li>
             </ul>
-            <p>Cada comodín se puede usar una vez por partida. Usarlos no resta puntos.</p>
+            <p>Cada comodín se puede usar una vez por partida. Cada uso resta 30 puntos.</p>
           </section>
         </div>
 
@@ -281,7 +281,7 @@
               <h2 class="tarjeta__titulo" id="titulo-resumen-partida">Tu partida</h2>
               <p id="resumen-categoria"></p>
               <p id="resumen-dificultad"></p>
-              <p class="texto-secundario">10 preguntas · Hasta 1.000 pts</p>
+              <p class="texto-secundario">10 preguntas · 20 s cada una</p>
               <button type="button" id="btn-comenzar-partida" class="boton boton--primario boton--ancho">
                 <svg class="icono" aria-hidden="true"><use href="#i-play"></use></svg>
                 Comenzar
@@ -316,13 +316,12 @@
 
         <div class="composicion composicion--lateral">
           <article class="tarjeta tarjeta--pregunta" id="juego-tarjeta">
-            <!-- Estado vacío: se sustituye por la pregunta cuando exista el banco (etapa 3) -->
+            <!-- Estado vacío: se sustituye por la pregunta cuando hay una partida en curso -->
             <div class="estado-vacio" id="juego-estado-vacio">
               <svg class="icono icono--grande" aria-hidden="true"><use href="#i-info"></use></svg>
-              <h2 class="estado-vacio__titulo">Las preguntas se cargan en la etapa 3</h2>
-              <p class="estado-vacio__texto">El banco de preguntas todavía no está incluido. Ya está
-                preparado el área donde se mostrará el enunciado, las cuatro opciones, el progreso
-                y el temporizador.</p>
+              <h2 class="estado-vacio__titulo">Aún no hay una partida en curso</h2>
+              <p class="estado-vacio__texto">Elige una categoría y una dificultad para comenzar. Aquí verás
+                el enunciado, las cuatro opciones, el progreso y el temporizador.</p>
               <div class="acciones acciones--centrado">
                 <button type="button" class="boton boton--secundario" data-ir="configuracion-partida">Volver a configurar</button>
               </div>
@@ -347,7 +346,7 @@
           <aside class="composicion__lateral">
             <section class="tarjeta" aria-labelledby="titulo-tus-comodines">
               <h2 class="tarjeta__titulo" id="titulo-tus-comodines">Tus comodines</h2>
-              <p class="texto-secundario">Una ayuda de cada tipo, sin perder puntos.</p>
+              <p class="texto-secundario">Una ayuda de cada tipo. Cada una resta 30 puntos.</p>
               <button type="button" id="btn-comodin-5050" class="boton boton--primario boton--ancho" disabled>
                 <svg class="icono" aria-hidden="true"><use href="#i-quitar"></use></svg>
                 50/50
@@ -444,7 +443,7 @@
               <span class="puntaje__icono"><svg class="icono" aria-hidden="true"><use href="#i-trofeo"></use></svg></span>
               <p class="etiqueta" id="titulo-puntaje">Tu puntaje</p>
               <p class="puntaje__valor" id="resultado-puntaje">0</p>
-              <p class="texto-secundario" id="resultado-maximo">de 1.000 puntos posibles</p>
+              <p class="texto-secundario" id="resultado-maximo">de 0 puntos posibles</p>
               <p class="chip" id="resultado-combinacion"></p>
               <div class="rejilla rejilla--3" id="resultado-resumen"></div>
               <section aria-labelledby="titulo-recorrido">

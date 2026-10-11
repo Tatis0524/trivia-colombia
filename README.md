@@ -108,9 +108,15 @@ Orden de carga de los scripts (por dependencias): `preguntas` → `almacenamient
 
 ## Decisiones de diseño
 
-1. **Sistema de puntuación (resuelta).** Se implementa la versión de los mockups: +100 por acierto, sin bonificaciones ni penalización, máximo 1.000 puntos (10 × 100). Difiere del Word §6.1, que incluía bono por tiempo restante, bono por racha, penalización por comodín y multiplicador por dificultad.
+1. **Sistema de puntuación (resuelta — cambió en la etapa 3).** En la etapa 2 se había usado la versión del mockup (+100 plano, máximo 1.000). Por solicitud de la estudiante, el motor aplica ahora el **Word §6.1**. Orden de aplicación (también documentado en la cabecera de `js/juego.js`):
+   1. Acierto: **100** + rapidez (**+5 por segundo restante, tope +100**) + racha (**+50** al 3.º, 6.º y 9.º acierto seguido).
+   2. Esa suma se **multiplica** por la dificultad (Fácil ×1, Medio ×1,5, Difícil ×2) y se redondea al entero más cercano (el .5 sube).
+   3. Error o tiempo agotado: 0 puntos y la racha vuelve a 0.
+   4. **Comodín: −30 puntos fijos por uso, sin multiplicar**, descontados del total acumulado. El puntaje mostrado nunca baja de 0 (`max(0, ganados − penalizaciones)`).
+   5. Máximo teórico (10 aciertos con ≥ 20 s restantes y sin comodines): Fácil 2.150 · Medio 3.225 · Difícil 4.300.
+   Se ajustaron los textos que dejaban de ser ciertos (Instrucciones, "Tus comodines", tarjeta "Tu partida", retroalimentación y desglose del resultado). Interpretación propia, a confirmar con el docente: la racha da +50 cada 3 aciertos seguidos (no solo una vez) y el multiplicador también afecta a rapidez y racha.
 2. **Enlaces profundos (resuelta).** Cada pantalla tiene un enlace por hash (`#inicio`, `#juego`, `#ranking`…) para poder revisar las 8 pantallas sin jugar una partida completa.
-3. **Pantallas sin motor (resuelta).** Juego, Retroalimentación y Resultado muestran estados vacíos con acción definida hasta que la etapa 3 conecte el motor.
+3. **Pantallas sin partida (resuelta).** Juego, Retroalimentación y Resultado muestran su estado vacío cuando no hay una partida en curso o terminada (por ejemplo, al abrir `#juego` directamente).
 4. **Ilustración de Inicio (pendiente).** `assets/img/hero-colombia.svg` es un marcador de posición; falta exportar el asset desde Figma.
 5. **Textos dinámicos (parcialmente pendientes).** El mockup define los textos de "Todas" y "Medio"; las pistas de Fácil/Difícil y algunas variantes de resultado/retroalimentación son plantillas provisionales (marcadas en `docs/diseno/notas-mockups.md`).
 6. **Tema oscuro.** No existe mockup; los valores en `styles.css` son provisionales.
@@ -121,7 +127,7 @@ Orden de carga de los scripts (por dependencias): `preguntas` → `almacenamient
 
 - [x] Etapa 1 — Estructura inicial.
 - [x] Etapa 2 — Maquetación HTML/CSS de las 8 pantallas (este commit).
-- [ ] Etapa 3 — Lógica del juego y banco de preguntas.
+- [x] Etapa 3 — Banco de 150 preguntas y motor del juego (`js/juego.js`) conectado a `ui.js`.
 - [ ] Etapa 4 — Comodines, ranking, estadísticas, sonidos y tema oscuro.
 - [ ] Etapa 5 — Pruebas, ajustes frente al diseño, despliegue en Vercel y video.
 
@@ -131,11 +137,27 @@ Orden de carga de los scripts (por dependencias): `preguntas` → `almacenamient
 - `node --check` sin errores en los 5 archivos JS.
 - El ranking con datos de ejemplo renderiza correctamente (estadísticas, tabla y resaltado del jugador).
 
-## Pendientes para la etapa 3
+## Motor del juego (etapa 3)
+
+- `Juego.iniciarPartida(categoria, dificultad, jugador)`, `obtenerPreguntas`, `mezclar` (Fisher-Yates), `iniciarTemporizador`, `detenerTemporizador`, `responder`, `usarComodin`, `avanzarPregunta` y `finalizarPartida`. Además `validarNombre`, `calcularPuntos`, `puntajeMaximo` y `cancelarPartida` (botón Salir).
+- `app.js` solo orquesta: pide al motor, pinta con `ui.js` y guarda ranking/estadísticas con `almacenamiento.js` al terminar la décima pregunta.
+- Reglas de control: una sola respuesta por pregunta (la segunda se ignora), un solo temporizador a la vez, el reloj solo corre en la pantalla de juego (cambiar de pantalla lo pausa, volver lo reanuda, Salir y cancelar el diálogo también), cada comodín una vez por partida.
+- "Todas" elige 10 preguntas al azar del nivel entre las cinco categorías (no se garantiza el mismo número por categoría).
+- Se corrigió un error de la etapa 2: el mensaje de error bajo el campo del nombre no aparecía (id distinto en `ui.js` e `index.html`).
+
+## Pruebas
+
+```bash
+node tests/validar-preguntas.js    # banco: 150 preguntas, 30 por categoría, 10 por categoría × dificultad, ids únicos…
+node tests/motor-juego.test.js     # motor: puntaje, selección, temporizador (reloj falso), bloqueo de respuestas
+python tests/e2e-navegador.py      # opcional: recorrido completo en Chromium (requiere Playwright y el servidor local en :5173)
+```
+
+## Pendientes
 
 - Exportar la ilustración de Inicio desde Figma a `assets/img/hero-colombia.svg`.
 - Definir textos de pista de Fácil y Difícil.
-- Definir variantes de textos de Resultado (0 aciertos, récord) y Retroalimentación (respuesta correcta).
+- Etapa 4: sonidos y revisión del tema oscuro; revisión de las preguntas falladas en Resultado.
 - Completar los enlaces de entrega en la tabla superior.
 
 ## Capturas de pantalla

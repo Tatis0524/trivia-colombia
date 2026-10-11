@@ -5,10 +5,9 @@
    NO contiene reglas del juego y NO dibuja contenido dinámico directamente:
    delega el renderizado en ui.js y las reglas en juego.js.
 
-   Nota de la etapa 2 (maquetación): el motor del juego aún no está implementado.
-   Todas las pantallas y controles existen y tienen una acción definida; las
-   áreas de preguntas, respuestas, estadísticas y ranking ya están preparadas
-   y muestran un estado vacío hasta que haya datos.
+   Etapa 3: conecta el motor (juego.js) con la interfaz (ui.js). App solo
+   orquesta: pide datos a Juego, los entrega a UI y guarda el resultado con
+   Almacenamiento. No calcula puntos ni decide qué pregunta sigue.
    ========================================================================== */
 
 const App = {
@@ -17,6 +16,10 @@ const App = {
 
   /** Estado de la sesión de juego (se completa al validar el nombre). */
   jugador: '',
+
+  /** Última retroalimentación y último resultado (para volver a pintarlos al regresar a la pantalla). */
+  ultimaRetro: null,
+  ultimoResultado: null,
 
   /** Selección de la próxima partida (se define en la pantalla 3). */
   partida: null,
@@ -42,11 +45,19 @@ const App = {
 
   /** Muestra una pantalla y oculta las demás. Es la ÚNICA función que cambia de pantalla. */
   irA(nombre) {
+    // Una pregunta ya respondida no se vuelve a jugar: se regresa a su retroalimentación.
+    if (nombre === 'juego' && Juego.hayPartidaEnCurso() && Juego.estado.respondida && this.ultimaRetro) {
+      nombre = 'retroalimentacion';
+    }
+
     const destino = document.querySelector(`.pantalla[data-pantalla="${nombre}"]`);
     if (!destino) {
       console.warn(`App.irA: la pantalla "${nombre}" no existe en index.html`);
       return;
     }
+
+    // El reloj solo corre mientras se ve la pantalla de juego (salir o cambiar de pantalla lo detiene).
+    if (nombre !== 'juego') Juego.detenerTemporizador();
 
     // Preparación de pantallas con contenido dinámico
     this.prepararPantalla(nombre);
@@ -58,6 +69,9 @@ const App = {
     this.pantallaActual = nombre;
     this.actualizarNavegacion(nombre);
     this.actualizarEnlace(nombre);
+
+    // Con la pregunta ya visible arranca (o se reanuda) la cuenta de 20 s.
+    if (nombre === 'juego') Juego.iniciarTemporizador();
 
     // Accesibilidad: llevar el foco al título de la nueva pantalla y volver arriba.
     window.scrollTo(0, 0);
@@ -115,10 +129,47 @@ const App = {
       UI.aplicarPreferencias(this.preferencias);
     }
 
-    if (nombre === 'resultado' && !this.ultimoResultado) {
-      document.getElementById('resultado-estado-vacio')?.removeAttribute('hidden');
-      document.getElementById('resultado-contenido')?.setAttribute('hidden', '');
+    if (nombre === 'juego') {
+      if (Juego.hayPartidaEnCurso()) this.renderJuego();
+      else this.mostrarEstadoVacio('juego-estado-vacio', ['juego-pregunta']);
     }
+
+    if (nombre === 'retroalimentacion') {
+      if (this.ultimaRetro && Juego.hayPartidaEnCurso()) UI.mostrarRetroalimentacion(this.ultimaRetro);
+      else this.mostrarEstadoVacio('retro-estado-vacio', ['retro-pregunta', 'retro-estado', 'retro-explicacion', 'retro-avance']);
+    }
+
+    if (nombre === 'resultado') {
+      if (this.ultimoResultado) {
+        UI.mostrarResultado(this.ultimoResultado);
+      } else {
+        document.getElementById('resultado-estado-vacio')?.removeAttribute('hidden');
+        document.getElementById('resultado-contenido')?.setAttribute('hidden', '');
+      }
+    }
+  },
+
+  /** Sin partida en curso: oculta lo que quedó de una partida anterior y muestra el estado vacío. */
+  mostrarEstadoVacio(idVacio, idsContenido) {
+    const vacio = document.getElementById(idVacio);
+    if (vacio) vacio.hidden = false;
+    idsContenido.forEach((id) => { const el = document.getElementById(id); if (el) el.hidden = true; });
+  },
+
+  /** Pinta la pregunta actual del motor con su marcador, tiempo y comodines (sin tocar el reloj). */
+  renderJuego() {
+    const estado = Juego.estado;
+    const contexto = `${estado.jugador} · ${UI.categoria(estado.categoria).nombre} · Nivel ${UI.dificultad(estado.dificultad).nombre}`;
+    const titulo = document.getElementById('titulo-juego');
+    const contextoTexto = document.getElementById('juego-contexto');
+    if (titulo) titulo.textContent = `¡Vamos, ${estado.jugador}!`;
+    if (contextoTexto) contextoTexto.textContent = contexto;
+
+    UI.mostrarPregunta(Juego.preguntaActual(), estado.indiceActual + 1, estado.preguntas.length);
+    UI.aplicarComodin('cincuenta', { eliminadas: estado.eliminadas });
+    UI.actualizarPuntaje(estado.puntaje);
+    UI.actualizarTemporizador(estado.tiempoRestante);
+    UI.actualizarComodines(estado.comodines);
   },
 
   /* ------------------------------------------------------------------ */
@@ -128,15 +179,16 @@ const App = {
   /** RF-01: valida el nombre y, si es válido, pasa a configurar la partida. */
   confirmarNombre() {
     const input = document.getElementById('nombre-jugador');
-    const nombre = (input?.value || '').trim();
+    const validacion = Juego.validarNombre(input?.value);
 
-    if (nombre.length < 2) {
-      UI.mostrarErrorCampo('nombre-jugador', 'Escribe un nombre de al menos 2 caracteres para jugar.');
+    if (!validacion.valido) {
+      UI.mostrarErrorCampo('nombre-jugador', validacion.error);
       UI.mostrarMensaje('Necesitamos tu nombre para jugar y para el ranking.', 'error');
       input?.focus();
       return false;
     }
 
+    const nombre = validacion.nombre;
     UI.mostrarErrorCampo('nombre-jugador', '');
     this.jugador = nombre;
     this.ultimoResultado = null;
@@ -145,7 +197,7 @@ const App = {
     return true;
   },
 
-  /** Inicia la partida con la selección actual (motor pendiente: etapa 3). */
+  /** Inicia la partida con la selección actual: el motor prepara el estado y la pantalla lo dibuja. */
   iniciarPartida() {
     if (!this.jugador) {
       UI.mostrarMensaje('Escribe tu nombre en el inicio para jugar.', 'error');
@@ -155,23 +207,16 @@ const App = {
 
     this.partida = this.partida || { categoria: 'todas', dificultad: 'medio' };
 
-    const contexto = `${this.jugador} · ${UI.categoria(this.partida.categoria).nombre} · Nivel ${UI.dificultad(this.partida.dificultad).nombre}`;
-    const titulo = document.getElementById('titulo-juego');
-    const contextoTexto = document.getElementById('juego-contexto');
-    if (titulo) titulo.textContent = `¡Vamos, ${this.jugador}!`;
-    if (contextoTexto) contextoTexto.textContent = contexto;
-
-    UI.actualizarPuntaje(0);
-    UI.actualizarTemporizador(20);
-    UI.actualizarComodines({ cincuenta: true, tiempo: true });
-    this.irA('juego');
-
-    if (PREGUNTAS.length === 0) {
-      // Sin banco de preguntas todavía: la pantalla muestra su estado vacío.
-      UI.mostrarMensaje('El banco de preguntas llega en la etapa 3. La interfaz ya está lista.', 'info');
+    try {
+      Juego.iniciarPartida(this.partida.categoria, this.partida.dificultad, this.jugador);
+    } catch (error) {
+      UI.mostrarMensaje(error.message, 'error');
+      return;
     }
-    // Etapa 3: Juego.iniciarPartida(this.jugador, this.partida.categoria,
-    //                               this.partida.dificultad) y UI.mostrarPregunta(...).
+
+    this.ultimaRetro = null;
+    this.ultimoResultado = null;
+    this.irA('juego');           // prepararPantalla dibuja la pregunta e irA arranca el reloj
   },
 
   /** Abre el juego desde el menú "Jugar": pide el nombre si hace falta. */
@@ -185,22 +230,91 @@ const App = {
     window.setTimeout(() => document.getElementById('nombre-jugador')?.focus(), 60);
   },
 
+  /** Responde con la opción elegida (o null si se agotó el tiempo) y muestra la retroalimentación. */
+  responder(indice) {
+    const resultado = Juego.responder(indice);
+    if (!resultado) return;                // ya respondida, bloqueada o inválida: no pasa nada
+    this.mostrarRetroalimentacion(resultado);
+  },
+
+  mostrarRetroalimentacion(resultado) {
+    this.ultimaRetro = resultado;
+    UI.actualizarPuntaje(resultado.puntaje);
+    this.irA('retroalimentacion');
+  },
+
+  /** Comodín 50/50 o +10 s: el motor aplica la regla y la interfaz refleja el resultado. */
+  usarComodin(tipo) {
+    const resultado = Juego.usarComodin(tipo);
+    if (!resultado.ok) {
+      UI.mostrarMensaje(resultado.motivo, 'info');
+      return;
+    }
+    UI.aplicarComodin(tipo, resultado);
+    UI.actualizarComodines(Juego.estado.comodines);
+    UI.actualizarPuntaje(resultado.puntaje);
+    UI.actualizarTemporizador(resultado.tiempoRestante);
+    UI.mostrarMensaje(tipo === 'cincuenta'
+      ? 'Quitamos dos opciones incorrectas. El comodín resta 30 puntos.'
+      : 'Sumaste 10 segundos. El comodín resta 30 puntos.', 'info');
+  },
+
   /** Sale de una partida en curso sin guardarla. */
   salirPartida() {
+    Juego.detenerTemporizador();           // el reloj no corre mientras se decide
     const confirmado = window.confirm('¿Salir de la partida? Esta partida no se guardará.');
-    if (!confirmado) return;
-    this.partidaEnCurso = null;
+    if (!confirmado) {
+      Juego.iniciarTemporizador();         // sigue donde iba (no hace nada si ya respondió)
+      return;
+    }
+    Juego.cancelarPartida();
+    this.ultimaRetro = null;
     UI.mostrarMensaje('Saliste de la partida. No se guardó ningún resultado.', 'info');
     this.irA(this.jugador ? 'configuracion-partida' : 'inicio');
   },
 
-  /** Siguiente pregunta (motor pendiente: etapa 3). */
+  /** Siguiente pregunta o, tras la décima, cierre de la partida. */
   siguientePregunta() {
-    if (!this.partidaEnCurso) {
+    if (!Juego.hayPartidaEnCurso()) {
       UI.mostrarMensaje('Cuando termines una partida podrás continuar con la siguiente pregunta.', 'info');
       return;
     }
-    // Etapa 3: Juego.siguientePregunta() y UI.mostrarPregunta(...) o UI.mostrarResultado(...).
+    const avanzo = Juego.avanzarPregunta();
+    if (avanzo === null) {
+      UI.mostrarMensaje('Primero responde la pregunta actual.', 'info');
+      return;
+    }
+    if (avanzo) this.irA('juego');
+    else this.finalizarPartida();
+  },
+
+  /** Cierra la partida, guarda ranking y estadísticas y muestra el resultado. */
+  finalizarPartida() {
+    const resumen = Juego.finalizarPartida();
+    if (!resumen) return;
+
+    const recordAnterior = Almacenamiento.obtenerEstadisticas().mejorPuntaje;
+    const puesto = Almacenamiento.guardarEnRanking({
+      nombre: resumen.jugador,
+      puntaje: resumen.puntaje,
+      categoria: resumen.categoria,
+      dificultad: resumen.dificultad,
+      fecha: resumen.fecha
+    });
+    Almacenamiento.actualizarEstadisticas({
+      aciertos: resumen.aciertos,
+      totalPreguntas: resumen.total,
+      puntaje: resumen.puntaje,
+      categoria: resumen.categoria
+    });
+
+    this.ultimoResultado = Object.assign({}, resumen, {
+      puesto,                                   // null si no entró al top 10 o no se pudo guardar
+      recordAnterior,
+      esRecord: resumen.puntaje > recordAnterior
+    });
+    this.ultimaRetro = null;
+    this.irA('resultado');
   },
 
   /** Borra el ranking local y las estadísticas (acción del mockup). */
@@ -278,20 +392,14 @@ const App = {
     });
     document.getElementById('btn-comenzar-partida')?.addEventListener('click', () => this.iniciarPartida());
 
-    // Juego: opciones y comodines (motor pendiente: etapa 3)
+    // Juego: opciones y comodines
     document.getElementById('juego-opciones')?.addEventListener('click', (evento) => {
       const opcion = evento.target.closest('.opcion');
       if (!opcion || opcion.disabled) return;
-      if (!this.partidaEnCurso) {
-        UI.mostrarMensaje('La validación de respuestas llega con el motor de preguntas (etapa 3).', 'info');
-      }
-      // Etapa 3: Juego.responder(Number(opcion.dataset.indice)) → retroalimentación.
+      this.responder(Number(opcion.dataset.indice));
     });
-    ['btn-comodin-5050', 'btn-comodin-tiempo'].forEach((id) => {
-      document.getElementById(id)?.addEventListener('click', () => {
-        UI.mostrarMensaje('Los comodines se activan con el motor de preguntas (etapa 3).', 'info');
-      });
-    });
+    document.getElementById('btn-comodin-5050')?.addEventListener('click', () => this.usarComodin('cincuenta'));
+    document.getElementById('btn-comodin-tiempo')?.addEventListener('click', () => this.usarComodin('tiempo'));
     document.getElementById('btn-salir-partida')?.addEventListener('click', () => this.salirPartida());
 
     // Retroalimentación
@@ -334,6 +442,12 @@ const App = {
   iniciar() {
     this.preferencias = Almacenamiento.obtenerPreferencias();
     UI.aplicarPreferencias(this.preferencias);
+
+    // El motor avisa a la interfaz cada segundo y cuando se agota el tiempo.
+    Juego.conectar({
+      alTick: (segundos) => UI.actualizarTemporizador(segundos),
+      alAgotarTiempo: (resultado) => this.mostrarRetroalimentacion(resultado)
+    });
 
     this.enlazarNavegacion();
     this.enlazarEventos();

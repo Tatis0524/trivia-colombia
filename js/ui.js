@@ -278,7 +278,7 @@ const UI = {
           <h2 class="retro-tarjeta__titulo">${this.icono('i-circulo-x')}${elegida === null ? 'Se acabó el tiempo' : 'Tu respuesta es incorrecta'}</h2>
           <p class="retro-tarjeta__puntos">+${puntos} puntos</p>
           <p>${this.esc(elegido)}.</p>
-          <p>No se restan puntos. ¡Sigue aprendiendo!</p>`;
+          <p>Esta pregunta suma 0 puntos y tu racha vuelve a cero. ¡Sigue aprendiendo!</p>`;
       }
     }
 
@@ -347,10 +347,14 @@ const UI = {
         </li>`).join('');
     }
 
-    setTexto('resultado-desglose', `${resumen.aciertos} aciertos × 100 puntos · ${errores} errores × 0 puntos`);
+    const mult = String(resumen.multiplicador ?? 1).replace('.', ',');
+    const comodines = resumen.comodinesUsados
+      ? ` · ${resumen.comodinesUsados} ${resumen.comodinesUsados === 1 ? 'comodín' : 'comodines'} (−${resumen.penalizacionComodines} pts)`
+      : '';
+    setTexto('resultado-desglose', `${resumen.aciertos} aciertos · ${errores} errores · multiplicador ×${mult}${comodines}`);
     setTexto('resultado-mensaje-lateral',
       `${this.enPalabra(resumen.aciertos)} descubrimientos para celebrar y ${this.enPalabra(errores).toLowerCase()} oportunidades para seguir aprendiendo. ¿Vamos por el siguiente reto?`);
-    setTexto('resultado-puesto', `Puesto ${resumen.puesto} en el ranking`);
+    setTexto('resultado-puesto', resumen.puesto ? `Puesto ${resumen.puesto} en el ranking` : 'Fuera del top 10 del ranking');
     setTexto('resultado-fecha', `${this.fecha(resumen.fecha)} · ${resumen.jugador}`);
     setTexto('resultado-record', resumen.esRecord
       ? '¡Nuevo récord personal!'
@@ -466,7 +470,7 @@ const UI = {
   /** Muestra u oculta el error de validación de un campo (ej. nombre vacío, RF-01). */
   mostrarErrorCampo(idCampo, mensaje) {
     const campo = document.getElementById(idCampo);
-    const error = document.getElementById(`${idCampo.replace('-input', '')}-error`);
+    const error = document.getElementById(`${idCampo}-error`);
     if (campo) {
       if (mensaje) campo.setAttribute('aria-invalid', 'true');
       else campo.removeAttribute('aria-invalid');
