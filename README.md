@@ -6,7 +6,7 @@ Proyecto académico — Universidad de Santander (UDES) · Desarrollo Full Stack
 
 **Estudiante:** `[PENDIENTE: nombre del estudiante]`
 
-> **Estado actual: etapa 2 — maquetación completa.** Las 8 pantallas de escritorio están maquetadas con HTML semántico, CSS con variables de la guía de estilos y navegación funcional (incluidos enlaces profundos por hash, por ejemplo `index.html#ranking`). La lógica del juego y el banco de preguntas **llegan en la etapa 3**; mientras tanto, las pantallas 4, 5 y 6 muestran estados vacíos con acciones definidas.
+> **Estado actual: etapa 3 — juego completo y verificado.** Las 8 pantallas están maquetadas (HTML semántico, CSS con variables de la guía de estilos, navegación funcional y enlaces profundos por hash, por ejemplo `index.html#ranking`) y conectadas al banco de 150 preguntas y al motor de juego: partida completa con temporizador, comodines, puntuación, retroalimentación, resultado y ranking en `localStorage`. La integración está verificada con pruebas automatizadas (ver **Verificación de la integración** más abajo). Quedan pendientes de la etapa 4 los sonidos, el tema oscuro y la revisión de preguntas falladas en Resultado.
 
 ## Enlaces de entrega
 
@@ -46,6 +46,7 @@ trivia-colombia/
 ├── assets/
 │   ├── img/                Logo e íconos de categorías
 │   └── sonidos/            Efectos de acierto y error
+├── tests/                  Pruebas de Node (banco, motor y recorrido E2E en navegador)
 ├── docs/diseno/            Exportaciones (PDF/PNG) del diseño de Figma
 └── README.md
 ```
@@ -128,7 +129,7 @@ Orden de carga de los scripts (por dependencias): `preguntas` → `almacenamient
 - [x] Etapa 1 — Estructura inicial.
 - [x] Etapa 2 — Maquetación HTML/CSS de las 8 pantallas (este commit).
 - [x] Etapa 3 — Banco de 150 preguntas y motor del juego (`js/juego.js`) conectado a `ui.js`.
-- [ ] Etapa 4 — Comodines, ranking, estadísticas, sonidos y tema oscuro.
+- [ ] Etapa 4 — Sonidos, tema oscuro y revisión de preguntas falladas (los comodines, el ranking y las estadísticas ya están implementados y probados en la etapa 3).
 - [ ] Etapa 5 — Pruebas, ajustes frente al diseño, despliegue en Vercel y video.
 
 ## Verificación de la maquetación (etapa 2)
@@ -145,13 +146,27 @@ Orden de carga de los scripts (por dependencias): `preguntas` → `almacenamient
 - "Todas" elige 10 preguntas al azar del nivel entre las cinco categorías (no se garantiza el mismo número por categoría).
 - Se corrigió un error de la etapa 2: el mensaje de error bajo el campo del nombre no aparecía (id distinto en `ui.js` e `index.html`).
 
+## Verificación de la integración (etapa 3)
+
+Partida completa probada de principio a fin con `node tests/e2e-navegador.js` (80 comprobaciones, 0 fallos): inicio y validación del nombre → configuración de categoría y dificultad → las 10 preguntas con temporizador, progreso y selección → estados correcto/incorrecto con explicación → comodines 50/50 y +10 s → pantalla de resultado → ranking y estadísticas → jugar de nuevo y salir sin guardar. Cubre además doble clic en "Siguiente", triple clic en una opción (una sola respuesta registrada), tiempo agotado, enlaces profundos con partida en curso, foco de teclado al cambiar de pantalla y que el reloj se pausa al salir de la pantalla de juego.
+
+**Errores encontrados y corregidos durante la etapa 3:**
+
+1. **Los scripts de prueba no estaban donde los buscaba `README.md` y sus propias cabeceras.** `motor-juego.test.js` estaba en la raíz y `validar-preguntas.js` dentro de `js/`, pero ambos resuelven `__dirname/../js/...` (pensados para `tests/`), así que `node motor-juego.test.js` fallaba con `ENOENT` buscando `Desktop\js\preguntas.js`. Corregido moviéndolos a `tests/` (reubicación, sin tocar su código): ambos pasan (58 pruebas y 13 comprobaciones).
+2. **El README apuntaba a `tests/e2e-navegador.py`, un archivo inexistente** que además exigía Playwright y un servidor manual. Sustituido por `tests/e2e-navegador.js` (Node puro, sin dependencias, sirve y juega la partida solo).
+3. **El estado del README seguía en etapa 2** pese a estar completada la etapa 3; actualizado (junto con el plan de etapas: comodines, ranking y estadísticas ya están probados).
+
+No se hallaron fallos de integración entre `app.js`, `juego.js`, `ui.js` e `index.html`: los ids referenciados existen, los scripts cargan en el orden correcto (con `defer`) y las clases de estado (`opcion--correcta/incorrecta/fuera`, `retro-tarjeta--*`, `progreso__segmento--*`) están definidas. El puntaje final del recorrido coincide con el cálculo manual según el Word §6.1: 185 + 200 + 200 + 200 + 250 (el último con +50 de racha al tercer acierto seguido) − 60 de comodines = **975 pts**, idéntico al mostrado por la interfaz y guardado en el ranking.
+
 ## Pruebas
 
 ```bash
 node tests/validar-preguntas.js    # banco: 150 preguntas, 30 por categoría, 10 por categoría × dificultad, ids únicos…
 node tests/motor-juego.test.js     # motor: puntaje, selección, temporizador (reloj falso), bloqueo de respuestas
-python tests/e2e-navegador.py      # opcional: recorrido completo en Chromium (requiere Playwright y el servidor local en :5173)
+node tests/e2e-navegador.js        # recorrido completo: genera __e2e.html, lo sirve y lo juega en Chrome headless (80 comprobaciones)
 ```
+
+Las tres terminan con código de salida `0` cuando todo pasa. El E2E no necesita servidor aparte ni dependencias: usa el Chrome (o Edge) instalado, con tiempo virtual para que los 20 s de cada pregunta duren milisegundos reales. Si el navegador está en otra ruta, se indica con `CHROME_PATH="C:\ruta\chrome.exe" node tests/e2e-navegador.js`. Con `--captura=docs/capturas/resultado-final.png` hace una segunda pasada que se detiene en la pantalla de Resultado y guarda la captura.
 
 ## Pendientes
 
@@ -162,7 +177,8 @@ python tests/e2e-navegador.py      # opcional: recorrido completo en Chromium (r
 
 ## Capturas de pantalla
 
-`[PENDIENTE: capturas del juego terminado]`
+- Resultado de una partida completa (975 pts, 5/10 aciertos, puesto 1): `docs/capturas/resultado-final.png` — se genera con `node tests/e2e-navegador.js --captura`.
+- Diseño de referencia de las 8 pantallas: `docs/diseno/mockup-alta-01..08.jpg`.
 
 ## Comandos útiles
 
