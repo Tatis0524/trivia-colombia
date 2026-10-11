@@ -1,80 +1,131 @@
 /* ==========================================================================
-   responsive.css — Media queries (tableta y escritorio)
-   Los estilos base (móvil, desde 360 px) están en styles.css.
-   Aquí SOLO se redefinen tokens y distribuciones; no se declaran colores nuevos.
-   Referencia de escritorio: marcos de 1440 px de Figma.
+   responsive.css — Media queries
+   Enfoque mobile-first: la base (375 px de referencia, funcional desde 360 px)
+   vive en styles.css. Aquí solo se redefinen tokens y distribuciones para:
+     · móvil muy pequeño  (≤ 374 px)
+     · tableta            (≥ 768 px)
+     · escritorio         (≥ 1024 px; referencia de diseño: 1440 px)
+   No se declaran colores nuevos: los colores viven en las variables de styles.css.
    ========================================================================== */
 
-/* Tableta */
+/* Móvil muy pequeño (360–374 px): un punto menos en títulos para que no se corten */
+@media (max-width: 374px) {
+  :root {
+    --fs-titulo: 1.75rem;        /* 28 px */
+    --fs-titulo-inicio: 1.75rem;
+    --fs-pregunta: 1.25rem;      /* 20 px */
+    --relleno-lateral: 14px;
+  }
+  .marca__lema { letter-spacing: 0.05em; }
+  .dato-tarjeta__valor { font-size: 1.625rem; }
+  .puntaje__valor { font-size: 3rem; }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Tableta (≥ 768 px)                                                      */
+/* ---------------------------------------------------------------------- */
 @media (min-width: 768px) {
   :root {
     --fs-titulo: 2.25rem;        /* 36 px */
     --fs-titulo-inicio: 3rem;    /* 48 px */
     --fs-seccion: 1.375rem;      /* 22 px */
+    --fs-subtitulo: 1.125rem;    /* 18 px */
+    --fs-pregunta: 1.625rem;     /* 26 px */
     --relleno-lateral: 24px;
   }
 
+  /* Encabezado en una sola fila: marca · menú centrado · engranaje */
+  .cabecera__interior {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas: "marca menu ajustes";
+    padding-block: var(--esp-4);
+    min-height: 88px;
+  }
+  .nav { justify-self: center; overflow: visible; }
+  .nav__lista { gap: var(--esp-1); }
+  .nav__enlace { padding-inline: var(--esp-3); font-size: 0.9375rem; }
+
+  .tarjeta { padding: var(--esp-6); }
   .pantalla { gap: var(--esp-8); padding-block: var(--esp-8) var(--esp-12); }
 
   .rejilla--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .rejilla--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rejilla--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .rejilla--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .acciones--par { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .rejilla--acciones { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
-  /* Las opciones de respuesta van en 2 columnas; la revisión se queda en 1 */
+  /* Categorías: 3 columnas (2×3) como en el mockup */
+  #categorias-lista { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+  /* Respuestas en 2 columnas; la revisión (retroalimentación) se queda en 1 */
   .opciones { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .opciones--columna { grid-template-columns: 1fr; }
+  .opciones--columna { grid-template-columns: minmax(0, 1fr); }
+  .opcion { min-height: 64px; }
 
-  .marcadores { grid-template-columns: repeat(2, minmax(0, 170px)); justify-content: end; }
+  .marcadores { grid-template-columns: repeat(2, minmax(0, 170px)); justify-content: start; }
 
-  /* Tabla de ranking en tableta: columnas visibles */
-  .tabla thead { position: static; width: auto; height: auto; clip: auto; clip-path: none; }
+  .inicio__principal .acciones--par .boton { padding-inline: var(--esp-4); font-size: var(--fs-boton); }
+  /* En tableta la ilustración es un banner apaisado (el formato vertical solo cabe en escritorio) */
+  .inicio__visual { aspect-ratio: 16 / 9; min-height: 300px; max-height: 420px; }
+  .datos-rapidos { font-size: 0.9375rem; }
+
+  .recorrido { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--esp-2); width: auto; }
+  .recorrido__item { width: 38px; height: 32px; }
+  #resultado-resumen .dato-tarjeta__valor { font-size: 1.875rem; }
+  #resultado-resumen .dato-tarjeta { padding: var(--esp-4); }
+  #categorias-lista .tarjeta-opcion { padding: var(--esp-4); }
+  #categorias-lista .tarjeta-opcion:has(input:checked) { padding: calc(var(--esp-4) - 1px); }
+
+  /* Tabla de ranking: columnas visibles (la tarjeta móvil vuelve a ser tabla) */
+  .tabla thead { position: static; width: auto; height: auto; overflow: visible; clip: auto; clip-path: none; }
   .tabla tbody { display: table-row-group; }
   .tabla tr { display: table-row; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; }
-  .tabla td {
-    display: table-cell;
-    width: auto;
-    padding: var(--esp-3) var(--esp-4);
-    border-bottom: 1px solid var(--borde-suave);
-  }
-  .tabla td::before { content: none; }
+  .tabla td { display: table-cell; padding: var(--esp-3) var(--esp-4); border-bottom: 1px solid var(--borde-suave); font-size: 0.9375rem; vertical-align: middle; }
+  .tabla .celda-pos { display: table-cell; min-width: 0; font-size: 1rem; white-space: nowrap; }
+  .tabla .celda-pos .icono { display: inline-block; margin-right: var(--esp-2); }
+  .tabla .celda-categoria, .tabla .celda-fecha { font-size: 0.9375rem; }
   .tabla th {
-    text-align: left;
     padding: var(--esp-2) var(--esp-4);
+    text-align: left;
     font-family: var(--fuente-titulos);
     font-size: var(--fs-pequeno);
+    font-weight: 600;
     color: var(--texto);
   }
   .tabla th:nth-child(3), .tabla td.celda-puntaje { text-align: right; }
   .tabla th:nth-child(5), .tabla td.celda-fecha { text-align: right; }
-  .tabla .fila--podio td { background: var(--tinte-azul); }
+  .tabla .fila--podio td { background: var(--tinte-azul); border-bottom-color: transparent; }
   .tabla .fila--podio td:first-child { border-radius: var(--radio-mini) 0 0 var(--radio-mini); }
   .tabla .fila--podio td:last-child { border-radius: 0 var(--radio-mini) var(--radio-mini) 0; }
-  .tabla .fila--propia td { background: var(--tinte-rojo); border-bottom-color: var(--color-error); }
-  .tabla .fila--propia td:first-child { border-radius: var(--radio-mini) 0 0 var(--radio-mini); box-shadow: inset 2px 0 0 var(--color-error); }
-  .tabla .fila--propia td:last-child { border-radius: 0 var(--radio-mini) var(--radio-mini) 0; box-shadow: inset -2px 0 0 var(--color-error); }
-  .tabla .fila--propia td { box-shadow: inset 0 2px 0 var(--color-error), inset 0 -2px 0 var(--color-error); }
+  .tabla .fila--propia { border: 0; padding: 0; }
+  .tabla .fila--propia td { background: var(--tinte-rojo); border-bottom-color: transparent; box-shadow: inset 0 2px 0 var(--color-error), inset 0 -2px 0 var(--color-error); }
+  .tabla .fila--propia td:first-child { border-radius: var(--radio-mini) 0 0 var(--radio-mini); box-shadow: inset 2px 0 0 var(--color-error), inset 0 2px 0 var(--color-error), inset 0 -2px 0 var(--color-error); }
+  .tabla .fila--propia td:last-child { border-radius: 0 var(--radio-mini) var(--radio-mini) 0; box-shadow: inset -2px 0 0 var(--color-error), inset 0 2px 0 var(--color-error), inset 0 -2px 0 var(--color-error); }
+  .tabla .fila--propia .celda-categoria, .tabla .fila--propia .celda-fecha { color: var(--texto); }
   .tabla .fila-vacia { display: block; }
+
+  /* Tema: las dos vistas previas lado a lado */
+  #tema-lista { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
-/* Escritorio (referencia de diseño: 1440 px) */
+/* ---------------------------------------------------------------------- */
+/* Escritorio (≥ 1024 px; referencia de diseño: 1440 px)                   */
+/* ---------------------------------------------------------------------- */
 @media (min-width: 1024px) {
   :root {
     --fs-titulo: 2.5rem;         /* 40 px */
     --fs-titulo-inicio: 3.5rem;  /* 56 px */
     --fs-seccion: 1.375rem;      /* 22 px */
-    --fs-pregunta: 1.875rem;     /* 30 px */
+    --fs-subtitulo: 1.125rem;    /* 18 px */
+    --fs-pregunta: 1.875rem;     /* 30 px (mockup) */
     --relleno-lateral: 32px;
   }
 
   /* Encabezado y pie: 1312 px útiles (64 px de margen a 1440 px) */
   .cabecera__interior, .pie__interior { padding-inline: var(--esp-8); }
-  .cabecera__interior { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; min-height: 96px; }
-  .marca { justify-self: start; }
-  .nav { flex: 0 0 auto; justify-self: center; overflow-x: visible; }
+  .cabecera__interior { grid-template-columns: 1fr auto 1fr; min-height: 96px; }
   .nav__lista { gap: var(--esp-2); }
-  .nav__enlace { font-size: 0.9375rem; padding: var(--esp-2) var(--esp-4); }
+  .nav__enlace { padding-inline: var(--esp-4); }
   .boton-icono { justify-self: end; }
 
   .principal { padding-block: var(--esp-8) var(--esp-12); }
@@ -85,13 +136,9 @@
 
   /* Inicio: 2 columnas (contenido + ilustración) */
   .inicio__columnas { grid-template-columns: minmax(0, 1fr) 460px; gap: var(--esp-12); align-items: center; }
-  .inicio__visual { aspect-ratio: 460 / 630; min-height: 0; }
+  .inicio__visual { aspect-ratio: 460 / 630; min-height: 0; max-height: none; }
 
-  .rejilla--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .rejilla--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-
-  /* Dificultad: control segmentado en fila (como el mockup) */
-  .segmentado { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
   /* Juego: cabecera con marcadores a la derecha */
   .cabecera-pantalla--marcadores {
@@ -100,13 +147,17 @@
     justify-content: space-between;
     gap: var(--esp-6);
   }
-  .cabecera-pantalla--marcadores .marcadores { flex: none; }
+  .cabecera-pantalla--marcadores .marcadores { flex: none; justify-content: end; }
   .marcador { min-width: 140px; }
 
   /* Comodines y salida en la columna lateral */
-  .composicion__lateral .nota--alerta { text-align: center; }
-  .composicion__lateral .nota { text-align: center; }
+  .composicion__lateral .nota, .composicion__lateral .nota--alerta { text-align: center; }
 
-  .datos-rapidos { font-size: 0.9375rem; }
   .puntaje__valor { font-size: 4rem; }
+}
+
+/* Impresión: sin colores de fondo pesados ni navegación */
+@media print {
+  .cabecera, .pie, .mensajes { display: none; }
+  body { background: #fff; }
 }
