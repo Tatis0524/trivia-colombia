@@ -129,7 +129,7 @@ Orden de carga de los scripts (por dependencias): `preguntas` → `almacenamient
 - [x] Etapa 1 — Estructura inicial.
 - [x] Etapa 2 — Maquetación HTML/CSS de las 8 pantallas (este commit).
 - [x] Etapa 3 — Banco de 150 preguntas y motor del juego (`js/juego.js`) conectado a `ui.js`.
-- [x] Etapa 4 — Persistencia completa (`js/almacenamiento.js`: validación, deduplicado, estadísticas y preferencias, con pruebas). Quedan de la etapa 4: sonidos, tema oscuro y revisión de preguntas falladas.
+- [x] Etapa 4 — Persistencia completa (`js/almacenamiento.js`: validación, deduplicado, estadísticas y preferencias, con pruebas) y revisión de preguntas falladas en Resultado. Quedan de la etapa 4: sonidos y revisión del tema oscuro.
 - [ ] Etapa 5 — Pruebas, ajustes frente al diseño, despliegue en Vercel y video.
 
 ## Verificación de la maquetación (etapa 2)
@@ -148,7 +148,7 @@ Orden de carga de los scripts (por dependencias): `preguntas` → `almacenamient
 
 ## Verificación de la integración (etapa 3)
 
-Partida completa probada de principio a fin con `node tests/e2e-navegador.js` (80 comprobaciones, 0 fallos): inicio y validación del nombre → configuración de categoría y dificultad → las 10 preguntas con temporizador, progreso y selección → estados correcto/incorrecto con explicación → comodines 50/50 y +10 s → pantalla de resultado → ranking y estadísticas → jugar de nuevo y salir sin guardar. Cubre además doble clic en "Siguiente", triple clic en una opción (una sola respuesta registrada), tiempo agotado, enlaces profundos con partida en curso, foco de teclado al cambiar de pantalla y que el reloj se pausa al salir de la pantalla de juego.
+Partida completa probada de principio a fin con `node tests/e2e-navegador.js` (la suite actual tiene 90 comprobaciones, 0 fallos): inicio y validación del nombre → configuración de categoría y dificultad → las 10 preguntas con temporizador, progreso y selección → estados correcto/incorrecto con explicación → comodines 50/50 y +10 s → pantalla de resultado → ranking y estadísticas → jugar de nuevo y salir sin guardar. Cubre además doble clic en "Siguiente", triple clic en una opción (una sola respuesta registrada), tiempo agotado, enlaces profundos con partida en curso, foco de teclado al cambiar de pantalla y que el reloj se pausa al salir de la pantalla de juego.
 
 **Errores encontrados y corregidos durante la etapa 3:**
 
@@ -177,13 +177,21 @@ No se hallaron fallos de integración entre `app.js`, `juego.js`, `ui.js` e `ind
 - `guardarEnRanking(partida)` ahora devuelve `null` cuando el registro es inválido (antes guardaba lo que llegara). La firma y el significado de `null` en `app.js` ("no entró al top 10 o no se pudo guardar") no cambian.
 - No cambió ninguna firma de `juego.js` ni `ui.js`, y el formato de cada resultado guardado sigue siendo el del enunciado: nombre del jugador, puntaje, categoría, dificultad y fecha. No se guarda nada remoto ni datos personales adicionales.
 
+## Pantallas completadas (etapa 4)
+
+- **Resultado**: además del puntaje, aciertos, porcentaje y tiempo total del mockup, el mensaje de cabecera varía con el desempeño (`UI.mensajeDesempeno`) y la nueva sección "Revisa tus preguntas falladas" lista, para cada error, el enunciado, la respuesta correcta, la opción elegida —o "Sin respuesta" si se agotó el tiempo— y la explicación (datos de `resumen.falladas` + banco `PREGUNTAS`; la tarjeta se oculta sola con partida perfecta). Botones: jugar de nuevo, ranking e inicio.
+- **Ranking y estadísticas**: top 10 con posición, nombre, puntaje, categoría y fecha; podio 1-3 con fondo e ícono de medalla y fila propia resaltada; 4 tarjetas de estadísticas (partidas jugadas, aciertos + porcentaje, récord personal y mejor categoría); borrar con confirmación (también las estadísticas, según el mockup); estado vacío con acceso a configurar una partida.
+- **Configuración**: interruptor de sonido, tema claro/oscuro con vista previa, resumen de preferencias y navegación de vuelta al inicio. Ambas preferencias persisten: probado con recarga en `tests/almacenamiento.test.js` y sin recarga en el paso 16 del E2E.
+
+Los textos y estilos nuevos (variantes del mensaje de resultado y componentes `.fallada*`) están registrados en `docs/diseno/notas-mockups.md`, decisiones 6 y 7. No se introdujeron datos de ejemplo: todas las pantallas leen el motor y `js/almacenamiento.js`.
+
 ## Pruebas
 
 ```bash
 node tests/validar-preguntas.js    # banco: 150 preguntas, 30 por categoría, 10 por categoría × dificultad, ids únicos…
 node tests/motor-juego.test.js     # motor: puntaje, selección, temporizador (reloj falso), bloqueo de respuestas (58 pruebas)
 node tests/almacenamiento.test.js  # persistencia: guardar/leer, orden y top 10, duplicados, borrar, estadísticas y preferencias (34 pruebas)
-node tests/e2e-navegador.js        # recorrido completo: genera __e2e.html, lo sirve y lo juega en Chrome headless (80 comprobaciones)
+node tests/e2e-navegador.js        # recorrido completo: genera __e2e.html, lo sirve y lo juega en Chrome headless (90 comprobaciones)
 ```
 
 Los cuatro terminan con código de salida `0` cuando todo pasa. El E2E no necesita servidor aparte ni dependencias: usa el Chrome (o Edge) instalado, con tiempo virtual para que los 20 s de cada pregunta duren milisegundos reales. Si el navegador está en otra ruta, se indica con `CHROME_PATH="C:\ruta\chrome.exe" node tests/e2e-navegador.js`. Con `--captura=docs/capturas/resultado-final.png` hace una segunda pasada que se detiene en la pantalla de Resultado y guarda la captura.

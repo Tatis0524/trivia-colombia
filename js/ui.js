@@ -48,6 +48,19 @@ const UI = {
     return palabras[numero] ?? String(numero);
   },
 
+  /**
+   * Mensaje motivador acorde al porcentaje de aciertos (variantes de texto no
+   * definidas en el mockup, registradas en docs/diseno/notas-mockups.md).
+   * Para el tramo "bueno" se conserva la frase del mockup.
+   */
+  mensajeDesempeno(porcentaje) {
+    if (porcentaje === 100) return '¡Impecable! Diez de diez: conoces Colombia como poquita gente.';
+    if (porcentaje >= 70) return 'Hoy conoces un poco más de Colombia. Ese es el mejor premio.';
+    if (porcentaje >= 40) return 'Buen recorrido: cada pregunta te acerca más a Colombia. ¡Vamos por otra!';
+    if (porcentaje > 0) return 'Fallar también enseña: revisa tus preguntas y vuelve a retar al país.';
+    return 'Hoy no sumaste aciertos, pero tu próxima pregunta ya te está esperando. ¡Inténtalo de nuevo!';
+  },
+
   /* ---------- 3. Configuración de partida ---------- */
 
   /** Tarjetas-opción de categoría (radio-card del mockup). */
@@ -325,7 +338,7 @@ const UI = {
     const porcentaje = resumen.total > 0 ? Math.round((resumen.aciertos / resumen.total) * 100) : 0;
 
     setTexto('titulo-resultado', `¡Muy bien, ${resumen.jugador}!`);
-    setTexto('resultado-mensaje', 'Hoy conoces un poco más de Colombia. Ese es el mejor premio.');
+    setTexto('resultado-mensaje', this.mensajeDesempeno(porcentaje));
     setTexto('resultado-puntaje', String(resumen.puntaje));
     setTexto('resultado-maximo', `de ${resumen.maximo} puntos posibles`);
     setTexto('resultado-combinacion', `${resumen.categoria === 'todas' ? 'Todas las categorías' : categoriaInfo.nombre} · ${dificultadInfo.nombre}`);
@@ -352,6 +365,33 @@ const UI = {
       ? ` · ${resumen.comodinesUsados} ${resumen.comodinesUsados === 1 ? 'comodín' : 'comodines'} (−${resumen.penalizacionComodines} pts)`
       : '';
     setTexto('resultado-desglose', `${resumen.aciertos} aciertos · ${errores} errores · multiplicador ×${mult}${comodines}`);
+
+    // Revisión de preguntas falladas: usa el detalle que el motor dejó en el
+    // resumen (id, enunciado, elegida, correcta) + el banco PREGUNTAS.
+    // Si no hay falladas (partida perfecta) la tarjeta queda oculta.
+    const falladasTarjeta = document.getElementById('resultado-falladas-tarjeta');
+    const falladasContenedor = document.getElementById('resultado-falladas');
+    const falladas = Array.isArray(resumen.falladas) ? resumen.falladas : [];
+    if (falladasTarjeta && falladasContenedor) {
+      falladasTarjeta.hidden = falladas.length === 0;
+      falladasContenedor.innerHTML = falladas.map((fallada) => {
+        const pregunta = PREGUNTAS.find((p) => p.id === fallada.id);
+        const opciones = pregunta ? pregunta.opciones : [];
+        const textoDe = (indice) => (typeof opciones[indice] === 'string' ? this.esc(opciones[indice]) : `Opción ${Number(indice) + 1}`);
+        const agotado = fallada.elegida === null || fallada.elegida === undefined;
+        const explicacion = pregunta && pregunta.explicacion ? `<p class="fallada__explicacion">${this.esc(pregunta.explicacion)}</p>` : '';
+        return `
+          <li class="fallada">
+            <p class="fallada__enunciado">${this.esc(fallada.enunciado)}</p>
+            <p class="fallada__opciones">
+              <span class="fallada__correcta">${this.icono('i-circulo-check')}<span><strong>Respuesta correcta:</strong> ${textoDe(fallada.correcta)}</span></span>
+              <span class="fallada__elegida">${this.icono('i-circulo-x')}<span><strong>${agotado ? 'Sin respuesta' : 'Elegiste'}:</strong> ${agotado ? 'se agotó el tiempo' : textoDe(fallada.elegida)}</span></span>
+            </p>
+            ${explicacion}
+          </li>`;
+      }).join('');
+    }
+
     setTexto('resultado-mensaje-lateral',
       `${this.enPalabra(resumen.aciertos)} descubrimientos para celebrar y ${this.enPalabra(errores).toLowerCase()} oportunidades para seguir aprendiendo. ¿Vamos por el siguiente reto?`);
     setTexto('resultado-puesto', resumen.puesto ? `Puesto ${resumen.puesto} en el ranking` : 'Fuera del top 10 del ranking');

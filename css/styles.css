@@ -771,6 +771,25 @@ table { border-collapse: collapse; }
 .recorrido__item--error { background: var(--tinte-rojo); color: var(--error-texto); }
 .recorrido__item .icono { width: 18px; height: 18px; }
 
+/* Revisión de preguntas falladas (Resultado): enunciado, correcta, elegida y explicación */
+.lista-falladas { list-style: none; margin: var(--esp-4) 0 0; padding: 0; display: grid; gap: var(--esp-3); }
+.fallada {
+  display: grid;
+  gap: var(--esp-2);
+  min-width: 0;
+  padding: var(--esp-4);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-mini);
+  background: var(--superficie);
+}
+.fallada__enunciado { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.fallada__opciones { display: grid; gap: var(--esp-1); margin: 0; font-size: 0.9375rem; }
+.fallada__correcta, .fallada__elegida { display: flex; align-items: flex-start; gap: 6px; overflow-wrap: anywhere; }
+.fallada__correcta .icono, .fallada__elegida .icono { flex: none; width: 18px; height: 18px; margin-top: 2px; }
+.fallada__correcta { color: var(--acierto-texto); }
+.fallada__elegida { color: var(--error-texto); }
+.fallada__explicacion { margin: 0; color: var(--texto-secundario); overflow-wrap: anywhere; }
+
 /* Ranking: la tabla se adapta a tarjetas en móvil y vuelve a tabla en tableta.
    Tarjeta móvil: [pos] [jugador ........ puntaje] / [categoría ...... fecha] */
 .tabla { width: 100%; }

@@ -470,6 +470,14 @@
               </section>
             </aside>
           </div>
+
+          <!-- Revisión de preguntas falladas (ui.js.mostrarResultado; solo si hay) -->
+          <section class="tarjeta" id="resultado-falladas-tarjeta" aria-labelledby="titulo-falladas" hidden>
+            <span class="tarjeta__icono"><svg class="icono" aria-hidden="true"><use href="#i-lista"></use></svg></span>
+            <h2 class="tarjeta__titulo" id="titulo-falladas">Revisa tus preguntas falladas</h2>
+            <p class="texto-secundario">La respuesta correcta y su explicación, para que el próximo acierto sea tuyo.</p>
+            <ol class="lista-falladas" id="resultado-falladas"></ol>
+          </section>
         </div>
 
         <div class="acciones rejilla--acciones">

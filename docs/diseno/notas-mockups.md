@@ -140,6 +140,14 @@ Estas notas son la referencia que usó la etapa 2 (maquetación HTML/CSS).
    correcta, "Ver resultado" en la última pregunta) son provisionales.
 5. La ilustración de Inicio y el panel de Configuración son imágenes de Figma: por ahora hay un
    marcador de posición en `assets/img/`.
+6. **Pantalla 6 (etapa 4)**: el mensaje de cabecera del resultado pasa a tener variantes según el
+   porcentaje de aciertos (`UI.mensajeDesempeno`): 100 %, ≥70 % (frase del mockup), ≥40 %, >0 % y
+   0 aciertos. El título "¡Muy bien, {Jugador}!" y el resto de la tarjeta no cambian.
+7. **Pantalla 6 (etapa 4)**: se añade la sección "Revisa tus preguntas falladas" (no existía en el
+   mockup): lista con enunciado, respuesta correcta, opción elegida —o "Sin respuesta" si se agotó
+   el tiempo— y explicación. Usa `resumen.falladas` del motor + el banco `PREGUNTAS`, y se oculta
+   automáticamente cuando la partida fue perfecta. Estilos nuevos `.fallada*` con los tokens de la
+   guía (sin colores nuevos).
 
 ## Correcciones tras la comparación visual (etapa 2)
 

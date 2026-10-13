@@ -258,6 +258,10 @@
     pasar('Puesto en el ranking', texto('#resultado-puesto').includes('Puesto'), texto('#resultado-puesto'));
     pasar('Récord personal', texto('#resultado-record').includes('récord'), texto('#resultado-record'));
     pasar('Fecha y jugador', texto('#resultado-fecha').includes('Tatiana'), texto('#resultado-fecha'));
+    pasar('Mensaje motivador acorde al desempeño (50 %)', texto('#resultado-mensaje').includes('pregunta'), texto('#resultado-mensaje'));
+    pasar('Revisión de falladas visible con las 5 incorrectas', visible('#resultado-falladas-tarjeta') && $$('#resultado-falladas .fallada').length === 5, `${$$('#resultado-falladas .fallada').length} revisadas`);
+    pasar('Cada fallada muestra correcta y explicación', $$('#resultado-falladas .fallada__correcta').length === 5 && $$('#resultado-falladas .fallada__explicacion').every((p) => p.textContent.trim().length > 10));
+    pasar('La pregunta agotada aparece como "Sin respuesta"', texto('#resultado-falladas').includes('Sin respuesta'), '');
 
     /* Modo captura (window.__E2E_CAPTURA): la partida terminada queda visible
        en Resultado y aquí se corta el recorrido. */
@@ -297,6 +301,22 @@
     pasar('Salir cancela y vuelve a configuración', visible('[data-pantalla="configuracion-partida"]') && J.estado === null);
     await cambiarHash('#ranking');
     pasar('La partida cancelada NO se guardó', $$('#ranking-tabla tbody tr').length === 1, `${$$('#ranking-tabla tbody tr').length} filas`);
+
+    /* ---- 16. Configuración general ---- */
+    paso('16. Configuración general');
+    await cambiarHash('#configuracion');
+    pasar('Pantalla de configuración visible', visible('[data-pantalla="configuracion"]'));
+    pasar('Sonido activado y reflejado en el interruptor', $('#pref-sonido').checked === true && texto('#sonido-estado') === 'Activado', texto('#sonido-estado'));
+    $('#tema-oscuro').click();
+    await esperar(60);
+    pasar('Cambiar a tema oscuro aplica data-tema', document.documentElement.getAttribute('data-tema') === 'oscuro' && $('#tema-oscuro').checked, document.documentElement.getAttribute('data-tema'));
+    $('#pref-sonido').click();
+    await esperar(60);
+    pasar('Desactivar sonido actualiza interruptor y estado', $('#pref-sonido').checked === false && texto('#sonido-estado') === 'Desactivado', texto('#sonido-estado'));
+    pasar('Resumen de preferencias actualizado', texto('#preferencias-resumen').includes('desactivado') && texto('#preferencias-resumen').includes('oscuro'), texto('#preferencias-resumen'));
+    click($('[data-pantalla="configuracion"] aside [data-ir="inicio"]'));
+    await esperar(150);
+    pasar('Navegación de regreso al inicio desde Configuración', visible('[data-pantalla="inicio"]'));
 
     finalizar();
   };
