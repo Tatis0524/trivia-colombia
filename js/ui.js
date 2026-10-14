@@ -22,6 +22,20 @@ const UI = {
     return `<svg class="${clase}" aria-hidden="true"><use href="#${id}"></use></svg>`;
   },
 
+  /**
+   * Ilustración de categoría generada con IA (assets/img/cat-*.png) para las
+   * tarjetas-opción grandes. Los chips pequeños conservan el ícono lineal del
+   * sprite, que lee mejor a ese tamaño.
+   */
+  ilustracion(categoria) {
+    const archivo = {
+      todas: 'cat-todas', geografia: 'cat-geografia', historia: 'cat-historia',
+      cultura: 'cat-cultura', deportes: 'cat-deportes', naturaleza: 'cat-naturaleza',
+    }[categoria.id];
+    if (!archivo) return this.icono(categoria.icono);
+    return `<img class="tarjeta-opcion__ilustracion" src="assets/img/${archivo}.png" alt="" decoding="async">`;
+  },
+
   /** Referencia a una categoría o dificultad por su id. */
   categoria(id) { return CATEGORIAS.find((c) => c.id === id) || CATEGORIAS[0]; },
   dificultad(id) { return DIFICULTADES.find((d) => d.id === id) || DIFICULTADES[1]; },
@@ -70,7 +84,7 @@ const UI = {
     contenedor.innerHTML = CATEGORIAS.map((categoria) => `
       <label class="tarjeta-opcion" for="cat-${categoria.id}">
         <input type="radio" name="categoria" id="cat-${categoria.id}" value="${categoria.id}" ${categoria.id === seleccion ? 'checked' : ''}>
-        <span class="tarjeta-opcion__icono">${this.icono(categoria.icono)}</span>
+        <span class="tarjeta-opcion__icono">${this.ilustracion(categoria)}</span>
         <span class="tarjeta-opcion__nombre">${this.esc(categoria.nombre)}</span>
         <span class="tarjeta-opcion__descripcion">${this.esc(categoria.descripcion)}</span>
         <span class="tarjeta-opcion__marca">${this.icono('i-circulo-check')}</span>
@@ -159,6 +173,7 @@ const UI = {
     setTexto('juego-progreso-texto', `${indice} de ${total}`);
     setTexto('juego-enunciado', pregunta.enunciado);
 
+    this.renderImagenPregunta(pregunta);
     this.renderProgreso('juego-progreso', indice, total);
 
     const letras = ['A', 'B', 'C', 'D'];
@@ -170,6 +185,48 @@ const UI = {
           <span class="opcion__cuerpo"><span class="opcion__texto">${this.esc(opcion)}</span></span>
         </button>`).join('');
     }
+  },
+
+  /**
+   * Imagen de apoyo opcional de la pregunta (campos `imagenUrl` y
+   * `fuenteImagenUrl` del banco). Marco con relación de aspecto fija para que
+   * no haya saltos de diseño; si la imagen no carga, se sustituye por un bloque
+   * con el ícono de la categoría: nunca queda un hueco ni un ícono roto.
+   */
+  renderImagenPregunta(pregunta) {
+    const figura = document.getElementById('juego-imagen');
+    const marco = document.getElementById('juego-imagen-marco');
+    const pie = document.getElementById('juego-imagen-pie');
+    if (!figura || !marco || !pie) return;
+
+    if (!pregunta.imagenUrl) {
+      figura.hidden = true;
+      marco.replaceChildren();
+      pie.replaceChildren();
+      return;
+    }
+
+    const categoriaInfo = this.categoria(pregunta.categoria);
+    figura.hidden = false;
+    marco.classList.remove('figura-pregunta__marco--alternativa');
+    marco.innerHTML = `
+      <img id="juego-imagen-img" src="${this.esc(pregunta.imagenUrl)}"
+           alt="Imagen de apoyo: ${this.esc(pregunta.enunciado)}"
+           width="960" height="640" decoding="async">
+      <span class="figura-pregunta__alternativa" hidden>${this.icono(categoriaInfo.icono, 'icono icono--grande')}</span>`;
+    pie.innerHTML = pregunta.fuenteImagenUrl
+      ? `Foto de apoyo · <a href="${this.esc(pregunta.fuenteImagenUrl)}" target="_blank" rel="noopener noreferrer">Fuente y créditos</a>`
+      : 'Foto de apoyo';
+
+    const img = marco.querySelector('img');
+    const alternativa = marco.querySelector('.figura-pregunta__alternativa');
+    const falla = () => {
+      img.hidden = true;
+      alternativa.hidden = false;
+      marco.classList.add('figura-pregunta__marco--alternativa');
+    };
+    img.addEventListener('error', falla);
+    if (img.complete && img.naturalWidth === 0) falla();   // error ocurrido antes del listener
   },
 
   actualizarTemporizador(segundos) {

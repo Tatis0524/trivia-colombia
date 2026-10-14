@@ -37,6 +37,9 @@
 
 const REGLAS = {
   preguntasPorPartida: 10,
+  // Mínimo de preguntas con foto que el sorteo garantiza por partida (si el
+  // banco tiene suficientes fotos para la categoría y dificultad elegidas).
+  imagenesMinimasPorPartida: 4,
   tiempoPorPregunta: 20,     // segundos
   tiempoExtra: 10,           // segundos que suma el comodín de tiempo
   opcionesPorPregunta: 4,
@@ -115,7 +118,9 @@ const Juego = {
     if (!DIFICULTADES.some((d) => d.id === dificultad)) throw new Error(`Dificultad no válida: "${dificultad}".`);
   },
 
-  /** Filtra PREGUNTAS por categoría ("todas" incluye las cinco) y dificultad, mezcla y devuelve 10 sin repetir. */
+  /** Filtra PREGUNTAS por categoría ("todas" incluye las cinco) y dificultad, mezcla y devuelve 10 sin repetir.
+   *  Garantiza que la partida incluya al menos REGLAS.imagenesMinimasPorPartida preguntas con foto
+   *  (si el banco dispone de esa cantidad para la combinación elegida). */
   obtenerPreguntas(categoria, dificultad) {
     this._validarSeleccion(categoria, dificultad);
     const disponibles = PREGUNTAS.filter((p) =>
@@ -123,9 +128,22 @@ const Juego = {
     if (disponibles.length < REGLAS.preguntasPorPartida) {
       throw new Error(`No hay suficientes preguntas (${disponibles.length}) para ${categoria} · ${dificultad}.`);
     }
-    return this.mezclar(disponibles)
-      .slice(0, REGLAS.preguntasPorPartida)
-      .map((p) => this._prepararPregunta(p));
+
+    const total = REGLAS.preguntasPorPartida;
+    const minConFoto = Math.min(REGLAS.imagenesMinimasPorPartida, total);
+
+    // Barajamos las con foto y las sin foto por separado para poder intercalarlas.
+    const conFoto = this.mezclar(disponibles.filter((p) => p.imagenUrl));
+    const sinFoto = this.mezclar(disponibles.filter((p) => !p.imagenUrl));
+
+    // Partida garantizada: sacamos 'minConFoto' preguntas con foto…
+    const elegidas = conFoto.slice(0, minConFoto);
+    // …y completamos el resto con preguntas aleatorias sin foto.
+    elegidas.push(...sinFoto.slice(0, total - elegidas.length));
+    // Si aún faltan (pocas fotos en el banco), las cubrimos con las con foto restantes.
+    if (elegidas.length < total) elegidas.push(...conFoto.slice(minConFoto, minConFoto + (total - elegidas.length)));
+
+    return this.mezclar(elegidas).map((p) => this._prepararPregunta(p));
   },
 
   /* ------------------------------------------------------------------ */

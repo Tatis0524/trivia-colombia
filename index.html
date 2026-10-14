@@ -7,8 +7,8 @@
   <meta name="description" content="Trivia Colombia: juego web de preguntas y respuestas sobre la geografía, historia, cultura, deportes y naturaleza de Colombia.">
   <meta name="theme-color" content="#FF6B6B">
 
-  <!-- Evita la petición automática a /favicon.ico hasta tener el logo definitivo (assets/img) -->
-  <link rel="icon" href="data:,">
+  <!-- Favicon: escudo de Trivia Colombia (assets/img/favicon.png) -->
+  <link rel="icon" type="image/png" href="assets/img/favicon.png">
 
   <!-- Tipografías de la guía de estilos: Poppins (títulos, botones) e Inter (texto) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -72,7 +72,9 @@
     <header class="cabecera">
       <div class="cabecera__interior contenedor">
         <button type="button" class="marca" data-ir="inicio" aria-label="Trivia Colombia, ir al inicio">
-          <span class="marca__logo" aria-hidden="true">TC</span>
+          <span class="marca__logo" aria-hidden="true">
+            <img class="marca__escudo" src="assets/img/logo-escudo.png" width="44" height="44" alt="" decoding="async">
+          </span>
           <span class="marca__texto">
             <span class="marca__nombre">Trivia Colombia</span>
             <span class="marca__lema">Un país mil descubrimientos</span>
@@ -148,9 +150,9 @@
           </div>
 
           <figure class="inicio__visual">
-            <!-- Imagen de Figma: por ahora marcador de posición (assets/img/hero-colombia.svg) -->
-            <img class="inicio__ilustracion" src="assets/img/hero-colombia.svg" width="460" height="630"
-                 alt="Marcador de posición de la ilustración de portada (pendiente de exportar desde Figma).">
+            <!-- Ilustración de portada generada con IA para el proyecto (assets/img/hero-inicio.jpg) -->
+            <img class="inicio__ilustracion" src="assets/img/hero-inicio.jpg" width="550" height="640"
+                 alt="Ilustración de portada: un pueblo andino de noche con río, montañas, luna y un tucán en un árbol." decoding="async">
             <p class="pildora inicio__visual-etiqueta">
               <svg class="icono" aria-hidden="true"><use href="#i-montana"></use></svg>
               Colombia, qué maravilla
@@ -338,6 +340,11 @@
               </div>
               <div class="progreso" id="juego-progreso" role="img" aria-label="Progreso de la partida"></div>
               <h2 class="enunciado" id="juego-enunciado"></h2>
+              <!-- Imagen de apoyo opcional (ui.js.renderImagenPregunta; campos imagenUrl/fuenteImagenUrl del banco) -->
+              <figure class="figura-pregunta" id="juego-imagen" hidden>
+                <div class="figura-pregunta__marco" id="juego-imagen-marco"></div>
+                <figcaption class="figura-pregunta__pie" id="juego-imagen-pie"></figcaption>
+              </figure>
               <p class="texto-secundario" id="juego-instruccion">Selecciona una respuesta antes de que termine el tiempo.</p>
               <div class="opciones" id="juego-opciones" role="group" aria-labelledby="juego-enunciado"></div>
             </div>
@@ -401,8 +408,10 @@
               <h2 class="enunciado" id="retro-enunciado"></h2>
               <div class="opciones opciones--columna" id="retro-opciones" aria-live="polite"></div>
             </div>
-          </article>
 
+            <!-- Hueco para el botón "Siguiente pregunta" en móvil (lo rellena app.js) -->
+            <div class="hueco-siguiente" id="hueco-siguiente"></div>
+          </article>
           <aside class="composicion__lateral">
             <section class="tarjeta retro-tarjeta" id="retro-estado" role="status" hidden></section>
             <section class="tarjeta retro-tarjeta" id="retro-explicacion" aria-label="Respuesta correcta" hidden></section>

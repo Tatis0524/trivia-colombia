@@ -442,6 +442,30 @@ const App = {
   /* Arranque                                                            */
   /* ------------------------------------------------------------------ */
 
+  // En móvil el botón "Siguiente pregunta" se traslada al interior del recuadro
+  // de la pregunta, para que al responder quede a la vista sin bajar hasta el
+  // final de la página. En tableta/escritorio vuelve a la columna lateral.
+  acomodarSiguiente() {
+    const anchoMovil = window.matchMedia('(max-width: 767px)');
+    const boton = document.getElementById('btn-siguiente');
+    const hueco = document.getElementById('hueco-siguiente');
+    const lateral = document.getElementById('retro-avance');
+    if (!boton || !hueco || !lateral) return;
+
+    const acomodar = () => {
+      const destino = anchoMovil.matches ? hueco : lateral;
+      if (boton.parentElement !== destino) destino.appendChild(boton);
+    };
+
+    acomodar();
+    // Reacomoda si la persona rota el teléfono o redimensiona la ventana.
+    if (typeof anchoMovil.addEventListener === 'function') {
+      anchoMovil.addEventListener('change', acomodar);
+    } else if (typeof anchoMovil.addListener === 'function') {
+      anchoMovil.addListener(acomodar);   // navegadores antiguos
+    }
+  },
+
   iniciar() {
     this.preferencias = Almacenamiento.obtenerPreferencias();
     UI.aplicarPreferencias(this.preferencias);
@@ -454,6 +478,7 @@ const App = {
 
     this.enlazarNavegacion();
     this.enlazarEventos();
+    this.acomodarSiguiente();
     this.irADesdeEnlace();
   }
 };
