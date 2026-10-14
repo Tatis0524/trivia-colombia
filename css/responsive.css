@@ -161,3 +161,35 @@
   .cabecera, .pie, .mensajes { display: none; }
   body { background: #fff; }
 }
+
+/* ==========================================================================
+   Inicio: la etiqueta y la tarjeta de texto ya NO van encima de la ilustración.
+   Se apilan: etiqueta arriba, imagen completa en medio y tarjeta debajo.
+   (Va al final del archivo para ganar a las reglas anteriores de .inicio__visual.)
+   ========================================================================== */
+.inicio__visual {
+  position: static;
+  display: grid;
+  gap: var(--esp-3);
+  overflow: visible;
+  background: none;
+  border-radius: 0;
+  aspect-ratio: auto;
+  min-height: 0;
+  max-height: none;
+}
+.inicio__ilustracion {
+  height: auto;
+  aspect-ratio: 4 / 3;
+  max-height: 420px;
+  border-radius: var(--radio-tarjeta);
+  background: var(--color-azul);
+}
+.inicio__visual-etiqueta { position: static; order: -1; justify-self: start; }
+.inicio__visual-pie { position: static; }
+@media (min-width: 768px) {
+  .inicio__ilustracion { aspect-ratio: 16 / 9; }
+}
+@media (min-width: 1024px) {
+  .inicio__ilustracion { aspect-ratio: 491 / 590; max-height: 560px; }
+}

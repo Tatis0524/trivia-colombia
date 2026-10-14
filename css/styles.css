@@ -306,7 +306,7 @@ svg.icono { width: 20px; height: 20px; }
   animation: pantalla-entra 220ms ease both;   /* transición discreta: solo opacidad y 6 px */
 }
 /* Resultado: aire extra entre el bloque de puntaje y la revisión de falladas */
-#resultado-contenido { display: flex; flex-direction: column; gap: var(--esp-10); }
+#resultado-contenido { display: flex; flex-direction: column; gap: var(--esp-6); }
 .cabecera-pantalla { display: flex; flex-direction: column; gap: var(--esp-2); }
 
 .etiqueta {

@@ -4,6 +4,15 @@
    preferencia "Sonido" de Ajustes. No toca el DOM ni la lógica del juego; app.js
    le avisa cuándo sonar (Sonido.reproducir('correcta'), Sonido.alTick(segundos)…).
 
+   Cómo se conecta: al cargarse (después de app.js) este archivo ENVUELVE los métodos de App y de
+   Juego que ya existen (ver Sonido.instalar al final). Así index.html solo necesita la etiqueta
+   <script src="js/sonido.js" defer></script> después de app.js y no hay que editar app.js.
+
+   Precisión: los audios se decodifican una vez con la Web Audio API y se reproducen desde memoria
+   (latencia casi nula). Además se recorta automáticamente el SILENCIO INICIAL de cada archivo, que
+   es la causa habitual de que el sonido "llegue tarde". Si Web Audio no está disponible (o los
+   archivos no se pueden leer, p. ej. abriendo index.html con doble clic), se usa <audio> como respaldo.
+
    Reglas:
      · Si el usuario desactiva el sonido, no suena nada y se corta lo que esté sonando.
      · Si un archivo falta o el navegador bloquea la reproducción, el juego sigue sin sonido
@@ -53,7 +62,8 @@ const Sonido = {
         audio.addEventListener('error', () => { audio._roto = true; });
         this._audios[nombre] = audio;
       } catch (error) { /* sin audio: el juego sigue */ }
-      if (typeof fetch === 'function') {
+      // Con file:// (index.html abierto con doble clic) el navegador bloquea fetch: se usa solo <audio>, sin errores en consola.
+      if (typeof fetch === 'function' && window.location.protocol !== 'file:') {
         fetch(efecto.archivo)
           .then((r) => (r.ok ? r.arrayBuffer() : null))
           .then((datos) => { if (datos) { this._datos[nombre] = datos; if (this._ctx) this._decodificar(nombre); } })
