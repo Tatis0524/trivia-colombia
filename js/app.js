@@ -1,15 +1,3 @@
-/* ==========================================================================
-   app.js — PUNTO DE ENTRADA y NAVEGACIÓN
-   Responsabilidad ÚNICA: arrancar la aplicación, mostrar/ocultar pantallas y
-   conectar eventos de la interfaz con juego.js, ui.js y almacenamiento.js.
-   NO contiene reglas del juego y NO dibuja contenido dinámico directamente:
-   delega el renderizado en ui.js y las reglas en juego.js.
-
-   Etapa 3: conecta el motor (juego.js) con la interfaz (ui.js). App solo
-   orquesta: pide datos a Juego, los entrega a UI y guarda el resultado con
-   Almacenamiento. No calcula puntos ni decide qué pregunta sigue.
-   ========================================================================== */
-
 const App = {
   /** Pantalla visible actualmente (valor de data-pantalla). */
   pantallaActual: 'inicio',

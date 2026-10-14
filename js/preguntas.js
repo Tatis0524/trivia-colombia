@@ -1,23 +1,3 @@
-/* ==========================================================================
-   preguntas.js — DATOS del juego (sin lógica)
-   Responsabilidad ÚNICA: contener el catálogo de categorías, dificultades y el
-   banco de preguntas. No filtra, no mezcla, no valida: eso es de juego.js.
-
-   Formato de cada pregunta (Word de requerimientos, §13):
-   {
-     id: 1,
-     categoria: 'naturaleza',        // id de CATEGORIAS
-     dificultad: 'facil',            // id de DIFICULTADES
-     enunciado: '...',
-     opciones: ['...', '...', '...', '...'],   // exactamente 4
-     correcta: 0,                    // índice (0-3) dentro de opciones
-     explicacion: '...'
-   }
-   ========================================================================== */
-
-/* Categorías jugables. "todas" es una opción de filtro, no una categoría del banco.
-   'icono' hace referencia a un <symbol> del sprite de index.html (guía §6).
-   'descripcion' y 'pista' son los textos del mockup de alta fidelidad. */
 const CATEGORIAS = [
   { id: 'todas',      nombre: 'Todas',                  icono: 'i-cuadricula',  descripcion: 'Un viaje por todo el país' },
   { id: 'geografia',  nombre: 'Geografía',              icono: 'i-montana',     descripcion: 'Regiones, ríos y ciudades' },

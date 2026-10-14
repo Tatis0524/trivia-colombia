@@ -1,25 +1,3 @@
-/* ==========================================================================
-   sonido.js — EFECTOS DE SONIDO
-   Responsabilidad ÚNICA: reproducir los audios de assets/sonido/ respetando la
-   preferencia "Sonido" de Ajustes. No toca el DOM ni la lógica del juego; app.js
-   le avisa cuándo sonar (Sonido.reproducir('correcta'), Sonido.alTick(segundos)…).
-
-   Cómo se conecta: al cargarse (después de app.js) este archivo ENVUELVE los métodos de App y de
-   Juego que ya existen (ver Sonido.instalar al final). Así index.html solo necesita la etiqueta
-   <script src="js/sonido.js" defer></script> después de app.js y no hay que editar app.js.
-
-   Precisión: los audios se decodifican una vez con la Web Audio API y se reproducen desde memoria
-   (latencia casi nula). Además se recorta automáticamente el SILENCIO INICIAL de cada archivo, que
-   es la causa habitual de que el sonido "llegue tarde". Si Web Audio no está disponible (o los
-   archivos no se pueden leer, p. ej. abriendo index.html con doble clic), se usa <audio> como respaldo.
-
-   Reglas:
-     · Si el usuario desactiva el sonido, no suena nada y se corta lo que esté sonando.
-     · Si un archivo falta o el navegador bloquea la reproducción, el juego sigue sin sonido
-       (nunca lanza errores ni rompe la partida).
-     · Los navegadores solo dejan sonar tras una interacción; el primer clic en "Jugar" la cumple.
-   ========================================================================== */
-
 const Sonido = {
   /** Se sincroniza con la preferencia guardada (App.iniciar y App.guardarPreferencia). */
   activo: true,

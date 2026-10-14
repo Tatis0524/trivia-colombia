@@ -1,35 +1,3 @@
-/* ==========================================================================
-   almacenamiento.js — Persistencia en localStorage
-   Responsabilidad ÚNICA: leer y escribir ranking, estadísticas y preferencias.
-   NO calcula puntajes (eso es de juego.js), NO toca el DOM y NO conoce las
-   reglas del juego. Todo acceso va en try/catch: localStorage puede estar
-   bloqueado (modo privado, navegador con permisos restringidos).
-
-   Integridad de los datos (etapa 4):
-   · guardarEnRanking valida los cinco campos antes de escribir: una partida
-     incompleta o inválida se rechaza (devuelve null) y NO modifica lo guardado.
-   · Los registros idénticos (mismo nombre, puntaje, categoría, dificultad y
-     fecha) no se agregan dos veces: repetir el guardado —doble clic, recarga,
-     cambio de pantalla— devuelve la posición existente sin duplicar filas.
-   · Al leer se descartan entradas corruptas y duplicados, se normalizan los
-     textos y el ranking vuelve ordenado con máximo 10 filas (RF-13).
-     Leer nunca escribe en el almacenamiento.
-   · actualizarEstadisticas deduplica por `fecha` y acumula además
-     `mejoresCombinaciones` (mejor puntaje por jugador + dificultad + categoría)
-     para que obtenerMejorPuntaje siga siendo correcto cuando esa partida ya
-     salió del top 10.
-   · obtenerEstadisticas agrega dos campos calculados que NO se persisten:
-     `porcentaje` de aciertos y `mejorCategoria` (id; el nombre visible lo
-     resuelve ui.js con UI.categoria()).
-
-   Coordinación con las demás integrantes (ver README, "Persistencia local"):
-   · app.js es el único llamante: pasa `dificultad`, `jugador` y `fecha` a
-     actualizarEstadisticas (campos nuevos, opcionales y retrocompatibles).
-   · ui.js lee obtenerRanking/obtenerEstadisticas: sus formatos no cambian.
-   · La confirmación (window.confirm) de "Borrar ranking" vive en app.js
-     (capa de interfaz); aquí solo se borra.
-   ========================================================================== */
-
 const Almacenamiento = {
   CLAVES: {
     ranking: 'trivia_ranking',            // definida en el Word (§13)

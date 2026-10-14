@@ -1,12 +1,3 @@
-/* ==========================================================================
-   ui.js — RENDERIZADO del contenido dinámico en el DOM
-   Responsabilidad ÚNICA: dibujar datos dentro de los contenedores de index.html
-   (categorías, pregunta, opciones, marcadores, resultado, ranking, mensajes).
-   NO decide qué pantalla se muestra (eso es app.js), NO calcula nada del juego
-   (juego.js) y NO lee/escribe localStorage (almacenamiento.js).
-   Recibe datos ya calculados y los pinta.
-   ========================================================================== */
-
 const UI = {
   /* ---------- utilidades ---------- */
 
